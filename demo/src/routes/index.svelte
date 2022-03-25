@@ -7,6 +7,10 @@
     tracking: string
   }
 
+  interface Option {
+    
+  }
+
   const renderSystems: RenderSystem[] = [{
     name: "Unicode",
     render: renderTwoTone,
@@ -44,7 +48,7 @@
     </div>
     <div class="flex-shrink flex flex-col w-32 border-l-4 border-gray-300">
       {#each renderSystems as renderSystem, i}
-        <div tabindex={i + 1} class="
+        <div tabindex=0 class="
           w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300
           hover:cursor-pointer transition-colors p-4
         " on:click={() => {selectedRenderSystem = renderSystem}}>{renderSystem.name}</div>

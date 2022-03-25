@@ -5,3 +5,4 @@ tasks:
     command: npm run test:watch
   - name: Run dev server
     command: cd demo && npm run dev
+    openMode: split-right

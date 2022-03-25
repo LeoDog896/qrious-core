@@ -544,7 +544,7 @@ function getBadness(length: number, badness: readonly number[]) {
 
 function finish(level: number, badness: number[], buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
   // Save pre-mask copy of frame.
-  const tempBuffer = buffer.slice() as BinaryUint8Array;
+  const tempBuffer = new Uint8Array(buffer) as BinaryUint8Array;
 
   let currentMask, i;
   let bit = 0;
@@ -572,7 +572,7 @@ function finish(level: number, badness: number[], buffer: BinaryUint8Array, widt
     }
 
     // Reset for next pass.
-    buffer = tempBuffer.slice() as BinaryUint8Array;
+    buffer = new Uint8Array(tempBuffer) as BinaryUint8Array;
   }
 
   // Redo best mask as none were "good enough" (i.e. last wasn't bit).
