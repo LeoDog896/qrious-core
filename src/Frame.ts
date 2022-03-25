@@ -80,12 +80,55 @@ function modN(x: number) {
   return x % 255;
 }
 
+function getBadness(length: number, badness: readonly number[]) {
+  let badRuns = 0;
+
+  for (let i = 0; i <= length; i++) {
+    if (badness[i] >= 5) {
+      badRuns += N1 + badness[i] - 5;
+    }
+  }
+
+  // FBFFFBF as in finder.
+  for (let i = 3; i < length - 1; i += 2) {
+    if (badness[i - 2] === badness[i + 2] &&
+      badness[i + 2] === badness[i - 1] &&
+      badness[i - 1] === badness[i + 1] &&
+      badness[i - 1] * 3 === badness[i] &&
+      // Background around the foreground pattern? Not part of the specs.
+      (badness[i - 3] === 0 || i + 3 > length ||
+      badness[i - 3] * 3 >= badness[i] * 4 ||
+      badness[i + 3] * 3 >= badness[i] * 4)) {
+      badRuns += N3;
+    }
+  }
+
+  return badRuns;
+}
+
+function setMask(x: number, y: number, mask: BinaryUint8Array) {
+  mask[getMaskBit(x, y)] = 1;
+}
+
+function syncMask(width: number, mask: BinaryUint8Array, buffer: BinaryUint8Array) {
+  for (let z = 0; z < buffer.length; z++) {
+    if (buffer[z] & 1) {
+      setMask(z % width, ~~(z / width), mask);
+    }
+  }
+}
+
+function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number {
+  const bit = getMaskBit(x, y);
+
+  return mask[bit] & 1;
+}
+
 export interface FrameResults {
   readonly buffer: Uint8Array
   readonly width: number
 }
 
-// eslint-disable-next-line perf-standard/check-function-inline
 function generateVersionsAndBlocks(length: number, level: number): {
   readonly version: number,
   readonly neccBlock1: number,
@@ -94,10 +137,7 @@ function generateVersionsAndBlocks(length: number, level: number): {
   readonly eccBlock: number
 } {
 
-  let version = 0;
-
-  while (version <= 40) {
-    version++;
+  for (let version = 0; version <= 40; version++) {
     const index = ((level - 1) * 4) + ((version - 1) * 16);
     
     const neccBlock1 = ErrorCorrection.BLOCKS[index];
@@ -111,56 +151,6 @@ function generateVersionsAndBlocks(length: number, level: number): {
   }
 
   throw Error("Unreachable!");
-}
-
-/**
- * Generates information for a QR code frame based on a specific value to be encoded.
- *
- * @param options - the options to be used
- */
-export function generateFrame(options: UserFacingFrameOptions): FrameResults {
-  const processedOptions: Required<FrameOptions> = { ...defaultFrameOptions, ...options };
-
-  const level = ErrorCorrection.LEVELS[processedOptions.level];
-  const value = options.value;
-
-  const { version, neccBlock1, neccBlock2, dataBlock, eccBlock } = generateVersionsAndBlocks(options.value.length, level);
-
-  const badness: number[] = [];
-
-  // FIXME: Ensure that it fits instead of being truncated.
-  const width = 17 + (4 * version);
-
-  let buffer = new Uint8Array(width * width) as BinaryUint8Array;
-
-  const ecc = new Uint8Array(dataBlock + ((dataBlock + eccBlock) * (neccBlock1 + neccBlock2)) + neccBlock2);
-  const mask = new Uint8Array(((width * (width + 1)) + 1) >> 1) as BinaryUint8Array;
-
-  insertFinders(mask, buffer, width);
-  insertAlignments(version, width, buffer, mask);
-
-  // Insert single foreground cell.
-  buffer[8 + (width * (width - 8))] = 1;
-
-  insertTimingGap(width, mask);
-  reverseMask(mask, width);
-  insertTimingRowAndColumn(buffer, mask, width);
-  insertVersion(buffer, width, version, mask);
-  syncMask(width, mask, buffer);
-
-  const polynomial: Uint8Array = new Uint8Array(eccBlock);
-
-  const stringBuffer = convertBitStream(version, value, ecc, dataBlock, neccBlock1, neccBlock2);
-  calculatePolynomial(polynomial, eccBlock);
-  appendEccToData(dataBlock, neccBlock1, neccBlock2, eccBlock, polynomial, stringBuffer);
-  const newStringBuffer = interleaveBlocks(ecc, eccBlock, dataBlock, neccBlock1, neccBlock2, stringBuffer.slice());
-  pack(width, dataBlock, eccBlock, neccBlock1, neccBlock2, mask, buffer, newStringBuffer);
-  buffer = finish(level, badness, buffer, width, mask);
-
-  return {
-    width,
-    buffer
-  };
 }
 
 function addAlignment(x: number, y: number, buffer: BinaryUint8Array, mask: BinaryUint8Array, width: number) {
@@ -182,28 +172,32 @@ function addAlignment(x: number, y: number, buffer: BinaryUint8Array, mask: Bina
 }
 
 function appendData(data: number, dataLength: number, ecc: number, eccLength: number, polynomial: Uint8Array, stringBuffer: Uint8Array) {
-  let bit, i, j;
+  let bit;
 
-  for (i = 0; i < eccLength; i++) {
+  for (let i = 0; i < eccLength; i++) {
     stringBuffer[ecc + i] = 0;
   }
 
-  for (i = 0; i < dataLength; i++) {
+  for (let i = 0; i < dataLength; i++) {
     bit = Galois.LOG[stringBuffer[data + i] ^ stringBuffer[ecc]];
 
     if (bit !== 255) {
-      for (j = 1; j < eccLength; j++) {
+      for (let j = 1; j < eccLength; j++) {
         stringBuffer[ecc + j - 1] = stringBuffer[ecc + j] ^
           Galois.EXPONENT[modN(bit + polynomial[eccLength - j])];
       }
     } else {
-      for (j = ecc; j < ecc + eccLength; j++) {
+      for (let j = ecc; j < ecc + eccLength; j++) {
         stringBuffer[j] = stringBuffer[j + 1];
       }
     }
 
     stringBuffer[ecc + eccLength - 1] = bit === 255 ? 0 : Galois.EXPONENT[modN(bit + polynomial[0])];
   }
+}
+
+function calculateMaxLength(dataBlock: number, neccBlock1: number, neccBlock2: number): number {
+  return (dataBlock * (neccBlock1 + neccBlock2)) + neccBlock2;
 }
 
 function appendEccToData(dataBlock: number, neccBlock1: number, neccBlock2: number, eccBlock: number, polynomial: Uint8Array, stringBuffer: Uint8Array) {
@@ -351,16 +345,11 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
   }
 }
 
-function calculateMaxLength(dataBlock: number, neccBlock1: number, neccBlock2: number): number {
-  return (dataBlock * (neccBlock1 + neccBlock2)) + neccBlock2;
-}
+function calculatePolynomial(eccBlock: number): Uint8Array {
 
-function calculatePolynomial(polynomial: Uint8Array, eccBlock: number) {
-  polynomial[0] = 1;
+  const polynomial = new Uint8Array(eccBlock).fill(1);
 
   for (let i = 1; i < eccBlock; i++) {
-    polynomial[i] = 1;
-
     for (let j = i; j > 0; j--) {
       polynomial[j] = polynomial[j] ? polynomial[j - 1] ^
         Galois.EXPONENT[modN(Galois.LOG[polynomial[j]] + i)] : polynomial[j - 1];
@@ -373,6 +362,8 @@ function calculatePolynomial(polynomial: Uint8Array, eccBlock: number) {
   for (let i = 0; i <= eccBlock; i++) {
     polynomial[i] = Galois.LOG[polynomial[i]];
   }
+
+  return polynomial;
 }
 
 function checkBadness(badness: number[], buffer: ReadOnlyBinaryUint8Array, width: number) {
@@ -523,32 +514,6 @@ function convertBitStream(version: number, value: string, ecc: Uint8Array, dataB
   return ecc;
 }
 
-function getBadness(length: number, badness: readonly number[]) {
-  let badRuns = 0;
-
-  for (let i = 0; i <= length; i++) {
-    if (badness[i] >= 5) {
-      badRuns += N1 + badness[i] - 5;
-    }
-  }
-
-  // FBFFFBF as in finder.
-  for (let i = 3; i < length - 1; i += 2) {
-    if (badness[i - 2] === badness[i + 2] &&
-      badness[i + 2] === badness[i - 1] &&
-      badness[i - 1] === badness[i + 1] &&
-      badness[i - 1] * 3 === badness[i] &&
-      // Background around the foreground pattern? Not part of the specs.
-      (badness[i - 3] === 0 || i + 3 > length ||
-      badness[i - 3] * 3 >= badness[i] * 4 ||
-      badness[i + 3] * 3 >= badness[i] * 4)) {
-      badRuns += N3;
-    }
-  }
-
-  return badRuns;
-}
-
 function finish(level: number, badness: number[], buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
   // Save pre-mask copy of frame.
   const tempBuffer = new Uint8Array(buffer) as BinaryUint8Array;
@@ -678,23 +643,6 @@ function insertAlignments(version: number, width: number, buffer: BinaryUint8Arr
 }
 
 /**
- * Inserts all three finders on a QR code
- * @param mask - TODO
- * @param buffer - The buffer to write the finders on
- * @param width - The width of the QR code -- used to get the starting coordinates of the finders.
- */
-function insertFinders(mask: BinaryUint8Array, buffer: BinaryUint8Array, width: number) {
-  for (let i = 0; i < 3; i++) {
-    insertFinder(
-      mask, buffer, width,
-      // on the first iteration (i === 0) position at the top left
-      i === 1 ? width - 7 : 0, // on the second iteration, position at the top right
-      i === 2 ? width - 7 : 0 // on the third iteration positin at the bottom left
-    );
-  }
-}
-
-/**
  * Insert a finder on a qr code
  * 
  * Finder format:
@@ -734,6 +682,23 @@ function insertFinder(mask: BinaryUint8Array, buffer: BinaryUint8Array, width: n
     buffer[y + 2 + (width * (x + i + 1))] = 1;
     buffer[y + 4 + (width * (x + i))] = 1;
     buffer[y + i + 1 + (width * (x + 4))] = 1;
+  }
+}
+
+/**
+ * Inserts all three finders on a QR code
+ * @param mask - TODO
+ * @param buffer - The buffer to write the finders on
+ * @param width - The width of the QR code -- used to get the starting coordinates of the finders.
+ */
+ function insertFinders(mask: BinaryUint8Array, buffer: BinaryUint8Array, width: number) {
+  for (let i = 0; i < 3; i++) {
+    insertFinder(
+      mask, buffer, width,
+      // on the first iteration (i === 0) position at the top left
+      i === 1 ? width - 7 : 0, // on the second iteration, position at the top right
+      i === 2 ? width - 7 : 0 // on the third iteration positin at the bottom left
+    );
   }
 }
 
@@ -784,12 +749,6 @@ function insertVersion(buffer: BinaryUint8Array, width: number, version: number,
     }
   }
   
-}
-
-function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number {
-  const bit = getMaskBit(x, y);
-
-  return mask[bit] & 1;
 }
 
 function pack(width: number, dataBlock: number, eccBlock: number, neccBlock1: number, neccBlock2: number, mask: BinaryUint8Array, buffer: BinaryUint8Array, stringBuffer: Uint8Array) {
@@ -863,14 +822,50 @@ function reverseMask(mask: BinaryUint8Array, width: number) {
   }
 }
 
-function setMask(x: number, y: number, mask: BinaryUint8Array) {
-  mask[getMaskBit(x, y)] = 1;
-}
+/**
+ * Generates information for a QR code frame based on a specific value to be encoded.
+ *
+ * @param options - the options to be used
+ */
+export function generateFrame(options: UserFacingFrameOptions): FrameResults {
+  const processedOptions: Required<FrameOptions> = { ...defaultFrameOptions, ...options };
 
-function syncMask(width: number, mask: BinaryUint8Array, buffer: BinaryUint8Array) {
-  for (let z = 0; z < buffer.length; z++) {
-    if (buffer[z] & 1) {
-      setMask(z % width, ~~(z / width), mask);
-    }
-  }
+  const level = ErrorCorrection.LEVELS[processedOptions.level];
+  const value = options.value;
+
+  const { version, neccBlock1, neccBlock2, dataBlock, eccBlock } = generateVersionsAndBlocks(options.value.length, level);
+
+  const badness: number[] = [];
+
+  // FIXME: Ensure that it fits instead of being truncated.
+  const width = 17 + (4 * version);
+
+  let buffer = new Uint8Array(width * width) as BinaryUint8Array;
+
+  const ecc = new Uint8Array(dataBlock + ((dataBlock + eccBlock) * (neccBlock1 + neccBlock2)) + neccBlock2);
+  const mask = new Uint8Array(((width * (width + 1)) + 1) >> 1) as BinaryUint8Array;
+
+  insertFinders(mask, buffer, width);
+  insertAlignments(version, width, buffer, mask);
+
+  // Insert single foreground cell.
+  buffer[8 + (width * (width - 8))] = 1;
+
+  insertTimingGap(width, mask);
+  reverseMask(mask, width);
+  insertTimingRowAndColumn(buffer, mask, width);
+  insertVersion(buffer, width, version, mask);
+  syncMask(width, mask, buffer);
+
+  const stringBuffer = convertBitStream(version, value, ecc, dataBlock, neccBlock1, neccBlock2);
+  const polynomial = calculatePolynomial(eccBlock);
+  appendEccToData(dataBlock, neccBlock1, neccBlock2, eccBlock, polynomial, stringBuffer);
+  const newStringBuffer = interleaveBlocks(ecc, eccBlock, dataBlock, neccBlock1, neccBlock2, stringBuffer.slice());
+  pack(width, dataBlock, eccBlock, neccBlock1, neccBlock2, mask, buffer, newStringBuffer);
+  buffer = finish(level, badness, buffer, width, mask);
+
+  return {
+    width,
+    buffer
+  };
 }

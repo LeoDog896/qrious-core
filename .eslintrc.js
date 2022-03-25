@@ -5,12 +5,16 @@ module.exports = {
   "plugins": [
     "@typescript-eslint",
     "eslint-plugin-tsdoc",
-    "eslint-plugin-perf-standard"
+    "eslint-plugin-perf-standard",
+    "functional"
   ],
   "extends": [
     "notninja/es6",
     'plugin:@typescript-eslint/recommended',
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:functional/no-object-orientation",
+    "plugin:functional/currying",
+    "plugin:functional/stylistic",
   ],
   "env": {
     "node": true,
@@ -28,6 +32,7 @@ module.exports = {
     "no-console": "error",
     "no-var": "error",
     "prefer-const": "error",
+    "no-use-before-define": "error",
     "no-bitwise": "off",
     "no-empty-function": "off",
     "no-invalid-this": "off",
@@ -41,6 +46,6 @@ module.exports = {
     "@typescript-eslint/prefer-nullish-coalescing": "error",
     "@typescript-eslint/prefer-optional-chain": "error",
     "@typescript-eslint/prefer-for-of": "error",
-    "perf-standard/check-function-inline": "error"
+    "perf-standard/check-function-inline": "warn"
   }
 }
