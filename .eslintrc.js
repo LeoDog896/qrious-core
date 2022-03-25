@@ -28,10 +28,6 @@ module.exports = {
     "no-console": "error",
     "no-var": "error",
     "prefer-const": "error",
-    "max-params": [
-      "error",
-      5
-    ],
     "no-bitwise": "off",
     "no-empty-function": "off",
     "no-invalid-this": "off",

@@ -85,38 +85,48 @@ export interface FrameResults {
   readonly width: number
 }
 
+// eslint-disable-next-line perf-standard/check-function-inline
+function generateVersionsAndBlocks(length: number, level: number): {
+  readonly version: number,
+  readonly neccBlock1: number,
+  readonly neccBlock2: number,
+  readonly dataBlock: number,
+  readonly eccBlock: number
+} {
+
+  let version = 0;
+
+  while (version <= 40) {
+    version++;
+    const index = ((level - 1) * 4) + ((version - 1) * 16);
+    
+    const neccBlock1 = ErrorCorrection.BLOCKS[index];
+    const neccBlock2 = ErrorCorrection.BLOCKS[index + 1];
+    const dataBlock = ErrorCorrection.BLOCKS[index + 2];
+    const eccBlock = ErrorCorrection.BLOCKS[index + 3];
+    
+    if (length <= (dataBlock * (neccBlock1 + neccBlock2)) + neccBlock2 - 3 + +(version <= 9) || version == 40) {
+      return { version, neccBlock1, neccBlock2, dataBlock, eccBlock };
+    }
+  }
+
+  throw Error("Unreachable!");
+}
+
 /**
  * Generates information for a QR code frame based on a specific value to be encoded.
  *
  * @param options - the options to be used
  */
 export function generateFrame(options: UserFacingFrameOptions): FrameResults {
-  let version = 0;
-  let neccBlock1 = 0;
-  let neccBlock2 = 0;
-  let dataBlock = 0;
-  let eccBlock = 0;
-  const badness: number[] = [];
-
   const processedOptions: Required<FrameOptions> = { ...defaultFrameOptions, ...options };
 
   const level = ErrorCorrection.LEVELS[processedOptions.level];
   const value = options.value;
 
-  while (version < 40) {
-    version++;
+  const { version, neccBlock1, neccBlock2, dataBlock, eccBlock } = generateVersionsAndBlocks(options.value.length, level);
 
-    let index = ((level - 1) * 4) + ((version - 1) * 16);
-
-    neccBlock1 = ErrorCorrection.BLOCKS[index++];
-    neccBlock2 = ErrorCorrection.BLOCKS[index++];
-    dataBlock = ErrorCorrection.BLOCKS[index++];
-    eccBlock = ErrorCorrection.BLOCKS[index];
-    
-    if (value.length <= (dataBlock * (neccBlock1 + neccBlock2)) + neccBlock2 - 3 + +(version <= 9)) {
-      break;
-    }
-  }
+  const badness: number[] = [];
 
   // FIXME: Ensure that it fits instead of being truncated.
   const width = 17 + (4 * version);
@@ -216,8 +226,6 @@ function appendEccToData(dataBlock: number, neccBlock1: number, neccBlock2: numb
 }
 
 function applyMask(width: number, buffer: BinaryUint8Array, mask: number, currentMask: BinaryUint8Array) {
-  let r3x, r3y, x, y;
-
   switch (mask) {
   case 0:
     for (let y = 0; y < width; y++) {
@@ -241,7 +249,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     break;
   case 2:
     for (let y = 0; y < width; y++) {
-      for (r3x = 0, x = 0; x < width; x++, r3x++) {
+      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
           r3x = 0;
         }
@@ -276,7 +284,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
       for (let r3x = 0, r3y = (y >> 1) & 1, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
           r3x = 0;
-          r3y = !r3y;
+          r3y = +!r3y;
         }
 
         if (!r3y && isMasked(x, y, currentMask) ^ 1) {
@@ -292,7 +300,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
         r3y = 0;
       }
 
-      for (r3x = 0, x = 0; x < width; x++, r3x++) {
+      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
           r3x = 0;
         }
@@ -310,7 +318,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
         r3y = 0;
       }
 
-      for (r3x = 0, x = 0; x < width; x++, r3x++) {
+      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
           r3x = 0;
         }
@@ -328,12 +336,12 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
         r3y = 0;
       }
 
-      for (r3x = 0, x = 0; x < width; x++, r3x++) {
+      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
           r3x = 0;
         }
 
-        if (!(+(r3x && r3x === r3y) + (x + y & 1) & 1) && isMasked(x, y, currentMask) ^ 1) {
+        if ((+(r3x && r3x === r3y) + (x + y & 1) & 1) ^ 1 && isMasked(x, y, currentMask) ^ 1) {
           buffer[x + (y * width)] ^= 1;
         }
       }
@@ -375,15 +383,15 @@ function checkBadness(badness: number[], buffer: ReadOnlyBinaryUint8Array, width
   for (let y = 0; y < width - 1; y++) {
     for (let x = 0; x < width - 1; x++) {
       // All foreground colour.
-      if ((buffer[x + (width * y)] &&
-        buffer[x + 1 + (width * y)] &&
-        buffer[x + (width * (y + 1))] &&
-        buffer[x + 1 + (width * (y + 1))]) ||
+      if ((buffer[x + (width * y)] &
+        buffer[x + 1 + (width * y)] &
+        buffer[x + (width * (y + 1))] &
+        buffer[x + 1 + (width * (y + 1))]) |
         // All background colour.
-        !(buffer[x + (width * y)] ||
-        buffer[x + 1 + (width * y)] ||
-        buffer[x + (width * (y + 1))] ||
-        buffer[x + 1 + (width * (y + 1))])) {
+        (buffer[x + (width * y)] |
+        buffer[x + 1 + (width * y)] |
+        buffer[x + (width * (y + 1))] |
+        buffer[x + 1 + (width * (y + 1))]) ^ 1) {
         bad += N2;
       }
     }
@@ -454,15 +462,14 @@ function checkBadness(badness: number[], buffer: ReadOnlyBinaryUint8Array, width
 }
 
 function convertBitStream(version: number, value: string, ecc: Uint8Array, dataBlock: number, neccBlock1: number, neccBlock2: number): Uint8Array {
-  let bit, i;
+  let bit;
   let length = value.length;
 
   // Convert string to bit stream. 8-bit data to QR-coded 8-bit data (numeric, alphanumeric, or kanji not supported).
-  for (i = 0; i < value.length; i++) {
+  for (let i = 0; i < length; i++) {
     ecc[i] = value.charCodeAt(i);
   }
 
-  const stringBuffer = ecc;
   const maxLength = calculateMaxLength(dataBlock, neccBlock1, neccBlock2);
 
   if (length >= maxLength - 2) {
@@ -477,43 +484,43 @@ function convertBitStream(version: number, value: string, ecc: Uint8Array, dataB
   let index = length;
 
   if (version > 9) {
-    stringBuffer[index + 2] = 0;
-    stringBuffer[index + 3] = 0;
+    ecc[index + 2] = 0;
+    ecc[index + 3] = 0;
 
     while (index--) {
-      bit = stringBuffer[index];
+      bit = ecc[index];
 
-      stringBuffer[index + 3] |= 255 & (bit << 4);
-      stringBuffer[index + 2] = bit >> 4;
+      ecc[index + 3] |= 255 & (bit << 4);
+      ecc[index + 2] = bit >> 4;
     }
 
-    stringBuffer[2] |= 255 & (length << 4);
-    stringBuffer[1] = length >> 4;
-    stringBuffer[0] = 0x40 | (length >> 12);
+    ecc[2] |= 255 & (length << 4);
+    ecc[1] = length >> 4;
+    ecc[0] = 0x40 | (length >> 12);
   } else {
-    stringBuffer[index + 1] = 0;
-    stringBuffer[index + 2] = 0;
+    ecc[index + 1] = 0;
+    ecc[index + 2] = 0;
 
     while (index--) {
-      bit = stringBuffer[index];
+      bit = ecc[index];
 
-      stringBuffer[index + 2] |= 255 & (bit << 4);
-      stringBuffer[index + 1] = bit >> 4;
+      ecc[index + 2] |= 255 & (bit << 4);
+      ecc[index + 1] = bit >> 4;
     }
 
-    stringBuffer[1] |= 255 & (length << 4);
-    stringBuffer[0] = 0x40 | (length >> 4);
+    ecc[1] |= 255 & (length << 4);
+    ecc[0] = 0x40 | (length >> 4);
   }
 
   // Fill to end with pad pattern.
   index = length + 3 - +(version < 10);
 
   while (index < maxLength) {
-    stringBuffer[index++] = 0xec;
-    stringBuffer[index++] = 0x11;
+    ecc[index++] = 0xec;
+    ecc[index++] = 0x11;
   }
 
-  return stringBuffer;
+  return ecc;
 }
 
 function getBadness(length: number, badness: readonly number[]) {
