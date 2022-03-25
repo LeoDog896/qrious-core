@@ -17,6 +17,7 @@ jobs:
         with:
           node-version: '16.x'
       - name: Test Build
+        working-directory: ./demo
         run: |
           cd demo
           npm i
@@ -30,13 +31,14 @@ jobs:
         with:
           node-version: '16.x'
       - name: Install Dependencies
-        run: |
-          cd demo
-          npm i
+        working-directory: ./demo
+        run: npm i
       - name: Build Project
+        working-directory: ./demo
         run: npm run build
       - name: Prepare Project
-        run: touch demo/build/.nojekyll
+        working-directory: ./demo
+        run: touch build/.nojekyll
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
