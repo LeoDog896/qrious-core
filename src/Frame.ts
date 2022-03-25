@@ -220,8 +220,8 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
   switch (mask) {
   case 0:
-    for (y = 0; y < width; y++) {
-      for (x = 0; x < width; x++) {
+    for (let y = 0; y < width; y++) {
+      for (let x = 0; x < width; x++) {
         if (((x + y) & 1) ^ 1 && isMasked(x, y, currentMask) ^ 1) {
           buffer[x + (y * width)] ^= 1;
         }
@@ -230,8 +230,8 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 1:
-    for (y = 0; y < width; y++) {
-      for (x = 0; x < width; x++) {
+    for (let y = 0; y < width; y++) {
+      for (let x = 0; x < width; x++) {
         if (!(y & 1) && isMasked(x, y, currentMask) ^ 1) {
           buffer[x + (y * width)] ^= 1;
         }
@@ -240,7 +240,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 2:
-    for (y = 0; y < width; y++) {
+    for (let y = 0; y < width; y++) {
       for (r3x = 0, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
           r3x = 0;
@@ -254,12 +254,12 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 3:
-    for (r3y = 0, y = 0; y < width; y++, r3y++) {
+    for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
         r3y = 0;
       }
 
-      for (r3x = r3y, x = 0; x < width; x++, r3x++) {
+      for (let r3x = r3y, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
           r3x = 0;
         }
@@ -272,8 +272,8 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 4:
-    for (y = 0; y < width; y++) {
-      for (r3x = 0, r3y = (y >> 1) & 1, x = 0; x < width; x++, r3x++) {
+    for (let y = 0; y < width; y++) {
+      for (let r3x = 0, r3y = (y >> 1) & 1, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
           r3x = 0;
           r3y = !r3y;
@@ -287,7 +287,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 5:
-    for (r3y = 0, y = 0; y < width; y++, r3y++) {
+    for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
         r3y = 0;
       }
@@ -305,7 +305,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 6:
-    for (r3y = 0, y = 0; y < width; y++, r3y++) {
+    for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
         r3y = 0;
       }
@@ -323,7 +323,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 7:
-    for (r3y = 0, y = 0; y < width; y++, r3y++) {
+    for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
         r3y = 0;
       }
