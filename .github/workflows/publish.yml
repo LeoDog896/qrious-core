@@ -18,6 +18,7 @@ jobs:
           node-version: '16.x'
       - name: Test Build
         run: |
+          cd demo
           npm i
           npm run build
   gh-release:
@@ -29,7 +30,9 @@ jobs:
         with:
           node-version: '16.x'
       - name: Install Dependencies
-        run: npm i
+        run: |
+          cd demo
+          npm i
       - name: Build Project
         run: npm run build
       - name: Prepare Project
