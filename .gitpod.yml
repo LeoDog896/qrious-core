@@ -1,0 +1,7 @@
+# Commands to start on workspace startup
+tasks:
+  - init: npm install && cd demo && npm install
+  - name: Run tests on watch
+    command: npm run test:watch
+  - name: Run dev server
+    command: cd demo && npm run dev
