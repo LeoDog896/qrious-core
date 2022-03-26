@@ -13,7 +13,7 @@ const config = {
 
 	kit: {
     paths: {
-      base: "./"
+      base: "/qrious-core"
     },
     prerender: {
       default: true
