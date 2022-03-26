@@ -12,6 +12,9 @@ const config = {
 	],
 
 	kit: {
+    paths: {
+      base: "./"
+    },
     prerender: {
       default: true
     },
