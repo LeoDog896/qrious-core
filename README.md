@@ -7,5 +7,5 @@ A simple scanning library.
 ```ts
 import { renderText, renderTwoTone, renderCanvas } from 'scannable/qr';
 
-renderText('https://example.com'); // Outputs a qr code in ASCII
+renderText('https://example.com'); // Outputs a qr code with regular text
 ```

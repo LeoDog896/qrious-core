@@ -30,7 +30,7 @@
 </script>
 <div class="flex flex-col w-screen h-screen">
   <div class="flex flex-row flex-grow w-full">
-    <div class="h-full flex-grow m-8">
+    <div class="h-full flex-grow p-8">
       <textarea tabindex=0
         placeholder="Type URL here (EX: https://example.com)"
         class="flex-grow w-full text-center" bind:value={value}
