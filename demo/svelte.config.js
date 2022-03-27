@@ -13,7 +13,7 @@ const config = {
 
 	kit: {
     paths: {
-      base: "/qrious-core"
+      base: "/scannable"
     },
     prerender: {
       default: true
