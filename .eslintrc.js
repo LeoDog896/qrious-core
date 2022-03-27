@@ -42,6 +42,7 @@ module.exports = {
         "args": "none"
       }
     ],
+    "functional/functional-parameters": "none",
     "@typescript-eslint/prefer-readonly": "error",
     "@typescript-eslint/prefer-nullish-coalescing": "error",
     "@typescript-eslint/prefer-optional-chain": "error",

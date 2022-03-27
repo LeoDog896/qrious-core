@@ -1,7 +1,6 @@
-import { renderText } from '../src/index';
+import { renderText, renderTwoTone } from '../src/qr';
 import { createReadStream } from 'fs';
 import split from 'split';
-import { renderTwoTone } from '../src/renderer/renderTwoTone';
 
 const exampleCom = `####### ### ##### #######
 #     # #  ## #   #     #
