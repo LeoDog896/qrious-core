@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { renderText, renderTwoTone } from "../../../src/index"
+  import { renderText, renderTwoTone } from "../../../src/qr"
   interface RenderSystem {
     name: string,
     render: (value: string) => string,
