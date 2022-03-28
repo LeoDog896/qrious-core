@@ -290,7 +290,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
   case 1:
     // Alternating straight lines. The first line is 1, the second is 0, and so forth
     for (let y = 0; y < width; y++) {
-      if (y % 2) {
+      if (y % 2) { // every other line
         for (let x = 0; x < width; x++) {
           if (isMasked(x, y, currentMask) ^ 1) {
             buffer[x + (y * width)] ^= 1;
@@ -302,20 +302,24 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     break;
   case 2:
     // Vertical straight lines, with the pattern: 1001001
-    for (let y = 0; y < width; y++) {
-      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
-        if (r3x === 3) {
-          r3x = 0;
-        }
-
-        if (!r3x && isMasked(x, y, currentMask) ^ 1) {
-          buffer[x + (y * width)] ^= 1;
+    for (let x = 0; x < width; x++) {
+      if (!(x % 3)) { // only does it every 3 lines (gap 2)
+        for (let y = 0; y < width; y++) {
+          if (isMasked(x, y, currentMask) ^ 1) {
+            buffer[x + (y * width)] ^= 1
+          }
         }
       }
     }
 
     break;
   case 3:
+    // Diagonal lines, as so:
+    // 01001
+    // 10010
+    // 00100 (look carefully, its 01 first then after that every 3 aka gap 2 (01001))
+    // 01001
+    // 10010
     for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
         r3y = 0;
