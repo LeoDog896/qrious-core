@@ -125,6 +125,10 @@ function setMask(x: number, y: number, mask: BinaryUint8Array) {
   mask[getMaskBit(x, y)] = 1;
 }
 
+function setMaskIndex(i: number, width: number, mask: BinaryUint8Array) {
+  mask[getMaskBit(i % width, ~~(i / width))] = 1
+}
+
 /**
  * Syncs the mask with the buffer.
  * This loops over each position in the buffer and sets it
@@ -137,7 +141,7 @@ function setMask(x: number, y: number, mask: BinaryUint8Array) {
 function syncMask(width: number, mask: BinaryUint8Array, buffer: ReadOnlyBinaryUint8Array) {
   for (let z = 0; z < buffer.length; z++) {
     if (buffer[z] & 1) {
-      setMask(z % width, ~~(z / width), mask);
+      setMaskIndex(z, width, mask);
     }
   }
 }
@@ -152,6 +156,20 @@ function syncMask(width: number, mask: BinaryUint8Array, buffer: ReadOnlyBinaryU
  */
 function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number {
   const bit = getMaskBit(x, y);
+
+  return mask[bit] & 1;
+}
+
+/**
+ * Check if the mask at the index position is masked (=== 1)
+ * 
+ * @param i The index in the buffer
+ * @param y The QR code width
+ * @param mask The mask to check against
+ * @returns If the mask at the index is masked (=== 1)
+ */
+function isMaskedIndex(i: number, width: number, mask: ReadOnlyBinaryUint8Array): number {
+  const bit = getMaskBit(i % width, ~~(i / width));
 
   return mask[bit] & 1;
 }
@@ -262,11 +280,9 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     * 01010101010
     * and so on 
     */ 
-    for (let y = 0; y < width; y++) {
-      for (let x = 0; x < width; x++) {
-        if (((x + y) & 1) ^ 1 && isMasked(x, y, currentMask) ^ 1) {
-          buffer[x + (y * width)] ^= 1;
-        }
+    for (let i = 0; i < width * width; i++) {
+      if (!(i % 2) && isMaskedIndex(i, width, currentMask) ^ 1) {
+        buffer[i] ^= 1;
       }
     }
 
@@ -275,7 +291,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     // Alternating straight lines. The first line is 1, the second is 0, and so forth
     for (let y = 0; y < width; y++) {
       for (let x = 0; x < width; x++) {
-        if (!(y & 1) && isMasked(x, y, currentMask) ^ 1) {
+        if (!(y % 2) && isMasked(x, y, currentMask) ^ 1) {
           buffer[x + (y * width)] ^= 1;
         }
       }
@@ -283,6 +299,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 2:
+    // Vertical straight lines, with the pattern: 1001001
     for (let y = 0; y < width; y++) {
       for (let r3x = 0, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
