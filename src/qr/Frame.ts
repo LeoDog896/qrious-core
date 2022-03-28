@@ -23,9 +23,11 @@
 //  f(0) = 1
 //  f(1) = 0
 // f(x) = x >> 1
-// aka f(x) = Math.floor(x / 2)
+//  aka f(x) = Math.floor(x / 2)
 // f(x) = x << 1
-// aka f(x) = x * 2
+//  aka f(x) = x * 2
+// f(x) = x & 1
+//  aka x === 1
 
 import * as Alignment from './constants/alignment';
 import * as ErrorCorrection from './constants/errorCorrection';
@@ -76,7 +78,20 @@ function getMaskBit(x: number, y: number): number {
   return bit;
 }
 
-function modN(x: number) {
+/**
+ * Using the modulus function, attempts to return an unsigned byte.
+ * 
+ * This does **not** check negative numbers
+ * 
+ * @param x - The number to turn into a ubyte
+ * 
+ * @example 
+ * modN(256) // 1
+ * modN(100) // 100
+ * 
+ * @return a ubyte if the number isn't negative
+ */
+function modN(x: number): number {
   return x % 255;
 }
 
@@ -110,7 +125,16 @@ function setMask(x: number, y: number, mask: BinaryUint8Array) {
   mask[getMaskBit(x, y)] = 1;
 }
 
-function syncMask(width: number, mask: BinaryUint8Array, buffer: BinaryUint8Array) {
+/**
+ * Syncs the mask with the buffer.
+ * This loops over each position in the buffer and sets it
+ * at the appropiate value at the mask.
+ * 
+ * @param width - The width of the QR code
+ * @param mask - The mask to sync
+ * @param buffer - The buffer to read from
+ */
+function syncMask(width: number, mask: BinaryUint8Array, buffer: ReadOnlyBinaryUint8Array) {
   for (let z = 0; z < buffer.length; z++) {
     if (buffer[z] & 1) {
       setMask(z % width, ~~(z / width), mask);
@@ -118,6 +142,14 @@ function syncMask(width: number, mask: BinaryUint8Array, buffer: BinaryUint8Arra
   }
 }
 
+/**
+ * Check if the mask at the x and y position is masked (=== 1)
+ * 
+ * @param x The x position in the mask
+ * @param y The y position in the mask
+ * @param mask The mask to check against
+ * @returns If the mask at those two positions is masked (=== 1)
+ */
 function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number {
   const bit = getMaskBit(x, y);
 
@@ -219,9 +251,17 @@ function appendEccToData(dataBlock: number, neccBlock1: number, neccBlock2: numb
   }
 }
 
+/** 
+ * Applies a mask to the buffer
+ */
 function applyMask(width: number, buffer: BinaryUint8Array, mask: number, currentMask: BinaryUint8Array) {
   switch (mask) {
   case 0:
+    /* This mask goes as:
+    * 10101010101
+    * 01010101010
+    * and so on 
+    */ 
     for (let y = 0; y < width; y++) {
       for (let x = 0; x < width; x++) {
         if (((x + y) & 1) ^ 1 && isMasked(x, y, currentMask) ^ 1) {
@@ -232,6 +272,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 1:
+    // Alternating straight lines. The first line is 1, the second is 0, and so forth
     for (let y = 0; y < width; y++) {
       for (let x = 0; x < width; x++) {
         if (!(y & 1) && isMasked(x, y, currentMask) ^ 1) {
@@ -525,6 +566,8 @@ function finish(level: number, badness: number[], buffer: BinaryUint8Array, widt
   /*
     * Using for instead of while since in original Arduino code if an early mask was "good enough" it wouldn't try for
     * a better one since they get more complex and take longer.
+    * 
+    * There are 7 different mask patterns, and this for loop checks each of them.
     */
   for (i = 0; i < 8; i++) {
     // Returns foreground-background imbalance.
