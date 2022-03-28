@@ -8,13 +8,20 @@
   interface TextRenderSystem extends RenderSystem {
     type: "text",
     lineSpacing: string,
-    tracking: string
+    tracking: string,
+    options: Option[]
+  }
+
+  enum OptionType {
+    BOOLEAN,
+    COLOR
   }
 
   type AnyRenderSystem = TextRenderSystem
 
   interface Option {
-    
+    name: string;
+    type: OptionType;
   }
 
   const renderSystems: AnyRenderSystem[] = [{
@@ -22,13 +29,15 @@
     name: "Unicode",
     render: renderTwoTone,
     lineSpacing: "1.1rem",
-    tracking: "-0.05em"
+    tracking: "-0.05em",
+    options: []
   }, {
     type: "text",
     name: "ASCII",
     render: renderText,
     lineSpacing: ".75rem",
-    tracking: "0"
+    tracking: "0",
+    options: []
   }]
 
 
@@ -66,5 +75,6 @@
     </div>
   </div>
   <div class="flex-row">
+    
   </div>
 </div>

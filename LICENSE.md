@@ -1,4 +1,4 @@
-QRious  
+Scannable  
 Copyright (C) 2017 Alasdair Mercer  
 Copyright (C) 2010 Tom Zerucha  
 
