@@ -1,8 +1,19 @@
 import { FrameOptions, UserFacingFrameOptions, defaultFrameOptions, generateFrame } from '../Frame';
 
-export const renderTwoTone = (options: Readonly<UserFacingFrameOptions<FrameOptions>> | string): string => {
-  const processedOptions: Required<FrameOptions> = {
+interface TwoToneRenderOptions extends FrameOptions {
+  readonly solidCharacter: string;
+  readonly solidTopCharacter: string;
+  readonly solidBottomCharacter: string;
+  readonly emptyCharacter: string;
+}
+
+export const renderTwoTone = (options: Readonly<UserFacingFrameOptions<TwoToneRenderOptions>> | string): string => {
+  const processedOptions: Required<TwoToneRenderOptions> = {
     ...defaultFrameOptions,
+    solidCharacter: '█',
+    solidTopCharacter: '▀',
+    solidBottomCharacter: '▄',
+    emptyCharacter: ' ',
     ...(typeof options === 'string' ? { value: options } : options)
   };
 
@@ -12,14 +23,17 @@ export const renderTwoTone = (options: Readonly<UserFacingFrameOptions<FrameOpti
 
   for (let i = 0; i < frame.width; i += 2) {
     for (let j = 0; j < frame.width; j++) {
-      if (frame.buffer[(i * frame.width) + j] && frame.buffer[((i + 1) * frame.width) + j]) {
-        str += "█";
-      } else if (!frame.buffer[(i * frame.width) + j] && frame.buffer[((i + 1) * frame.width) + j]) {
-        str += "▄";
-      } else if (frame.buffer[(i * frame.width) + j] && !frame.buffer[((i + 1) * frame.width) + j]) {
-        str += "▀";
+      const topExists = frame.buffer[(i * frame.width) + j]
+      const bottomExists = frame.buffer[((i + 1) * frame.width) + j]
+
+      if (topExists && bottomExists) {
+        str += processedOptions.solidCharacter;
+      } else if (!topExists && bottomExists) {
+        str += processedOptions.solidBottomCharacter;
+      } else if (topExists && !bottomExists) {
+        str += processedOptions.solidTopCharacter;
       } else {
-        str += " ";
+        str += processedOptions.emptyCharacter;
       }
     }
     if (i !== frame.width - 1) {

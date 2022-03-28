@@ -1,22 +1,4 @@
 /* eslint-disable max-params */
-/*
- * QRious
- * Copyright (C) 2017 Alasdair Mercer
- * Copyright (C) 2010 Tom Zerucha
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 // Bitwise notes:
 // f(x) = x ^ 1
@@ -49,9 +31,17 @@ export type UserFacingFrameOptions<T = FrameOptions> = Partial<T> & { readonly v
 
 export type RenderOptionsDefaults<T = FrameOptions> = Omit<T, 'value'> & { readonly value?: string };
 
+/**
+ * A type of a {@link Uint8Array} that ensures that any value in it
+ * is either 0 or 1
+ */
 export type BinaryUint8Array = Uint8Array & { 
   [key: number]: 0 | 1
 };
+
+/**
+ * A type of {@link BinaryUint8Array} that is read only.
+ */
 export type ReadOnlyBinaryUint8Array = Omit<BinaryUint8Array, 'copyWithin' | 'fill' | 'reverse' | 'set' | 'sort'> & { readonly [key: number]: 0 | 1 };
 
 export const defaultFrameOptions: RenderOptionsDefaults<FrameOptions> = Object.freeze({ level: 'L' });
@@ -164,7 +154,7 @@ function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number 
  * Check if the mask at the index position is masked (=== 1)
  * 
  * @param i The index in the buffer
- * @param y The QR code width
+ * @param width The QR code width
  * @param mask The mask to check against
  * @returns If the mask at the index is masked (=== 1)
  */
@@ -172,11 +162,6 @@ function isMaskedIndex(i: number, width: number, mask: ReadOnlyBinaryUint8Array)
   const bit = getMaskBit(i % width, ~~(i / width));
 
   return mask[bit] & 1;
-}
-
-export interface FrameResults {
-  readonly buffer: Uint8Array
-  readonly width: number
 }
 
 function generateVersionsAndBlocks(length: number, level: number): {
@@ -317,7 +302,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     // Diagonal lines, as so:
     // 01001
     // 10010
-    // 00100 (look carefully, its 01 first then after that every 3 aka gap 2 (01001))
+    // 00100
     // 01001
     // 10010
     for (let r3y = 0, y = 0; y < width; y++, r3y++) {
@@ -889,6 +874,12 @@ function reverseMask(mask: BinaryUint8Array, width: number) {
   }
 }
 
+export interface FrameResults {
+  readonly buffer: Uint8Array;
+  readonly width: number;
+  readonly version: number;
+}
+
 /**
  * Generates information for a QR code frame based on a specific value to be encoded.
  *
@@ -900,7 +891,10 @@ export function generateFrame(options: UserFacingFrameOptions): FrameResults {
   const level = ErrorCorrection.LEVELS[processedOptions.level];
   const value = options.value;
 
-  const { version, neccBlock1, neccBlock2, dataBlock, eccBlock } = generateVersionsAndBlocks(options.value.length, level);
+  const { 
+    version, neccBlock1, neccBlock2,
+    dataBlock, eccBlock 
+  } = generateVersionsAndBlocks(options.value.length, level);
 
   const badness: number[] = [];
 
@@ -933,6 +927,7 @@ export function generateFrame(options: UserFacingFrameOptions): FrameResults {
 
   return {
     width,
-    buffer
+    buffer,
+    version
   };
 }

@@ -2,21 +2,29 @@
   import { renderText, renderTwoTone } from "../../../src/qr"
   interface RenderSystem {
     name: string,
-    render: (value: string) => string,
+    render: (value: string) => string
+  }
+
+  interface TextRenderSystem extends RenderSystem {
+    type: "text",
     lineSpacing: string,
     tracking: string
   }
+
+  type AnyRenderSystem = TextRenderSystem
 
   interface Option {
     
   }
 
-  const renderSystems: RenderSystem[] = [{
+  const renderSystems: AnyRenderSystem[] = [{
+    type: "text",
     name: "Unicode",
     render: renderTwoTone,
     lineSpacing: "1.1rem",
     tracking: "-0.05em"
   }, {
+    type: "text",
     name: "ASCII",
     render: renderText,
     lineSpacing: ".75rem",
@@ -46,12 +54,14 @@
         }
       </h1>
     </div>
-    <div class="flex-shrink flex flex-col w-32 border-l-4 border-gray-300">
+    <div class="flex-shrink flex flex-col w-32 ">
       {#each renderSystems as renderSystem, i}
-        <div tabindex=0 class="
-          w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300
-          hover:cursor-pointer transition-colors p-4
-        " on:click={() => {selectedRenderSystem = renderSystem}}>{renderSystem.name}</div>
+        {#if renderSystem.type == "text"}
+          <div tabindex=0 class="
+            w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300
+            hover:cursor-pointer transition-colors p-4
+          " on:click={() => {selectedRenderSystem = renderSystem}}>{renderSystem.name}</div>
+        {/if}
       {/each}
     </div>
   </div>

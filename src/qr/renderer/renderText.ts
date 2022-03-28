@@ -1,8 +1,10 @@
 import { FrameOptions, UserFacingFrameOptions, defaultFrameOptions, generateFrame } from '../Frame';
 
 interface TextRenderOptions extends FrameOptions {
-  readonly foregroundChar?: string;
-  readonly backgroundChar?: string;
+  /** The activated characters (black on a regular QR code.) */
+  readonly foregroundChar: string;
+  /** The non-activated characters (white on a regular QR code) */
+  readonly backgroundChar: string;
 }
 
 export const renderText = (options: Readonly<UserFacingFrameOptions<TextRenderOptions>> | string): string => {

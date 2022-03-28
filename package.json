@@ -1,16 +1,21 @@
 {
-  "name": "qrious-core",
-  "version": "4.0.0",
-  "description": "QRious core engine for QR code generation",
-  "homepage": "https://github.com/neocotic/qrious-core",
+  "name": "scannable",
+  "version": "1.0.0",
+  "description": "A general purpose scannable creation library.",
+  "homepage": "https://github.com/LeoDog896/scannable",
   "bugs": {
-    "url": "https://github.com/neocotic/qrious-core/issues"
+    "url": "https://github.com/LeoDog896/scannable/issues"
   },
   "author": {
+    "name": "Tristan F.",
+    "email": "leodog896@gmail.com",
+    "url": "https://github.com/LeoDog896"
+  },
+  "contributors": [{
     "name": "Alasdair Mercer",
     "email": "mercer.alasdair@gmail.com",
     "url": "https://neocotic.com"
-  },
+  }],
   "license": "GPL-3.0",
   "keywords": [
     "qr",
@@ -26,7 +31,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=15"
   },
   "scripts": {
     "start": "tsdx watch",
