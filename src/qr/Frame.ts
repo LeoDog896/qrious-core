@@ -290,9 +290,11 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
   case 1:
     // Alternating straight lines. The first line is 1, the second is 0, and so forth
     for (let y = 0; y < width; y++) {
-      for (let x = 0; x < width; x++) {
-        if (!(y % 2) && isMasked(x, y, currentMask) ^ 1) {
-          buffer[x + (y * width)] ^= 1;
+      if (y % 2) {
+        for (let x = 0; x < width; x++) {
+          if (isMasked(x, y, currentMask) ^ 1) {
+            buffer[x + (y * width)] ^= 1;
+          }
         }
       }
     }
@@ -383,6 +385,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
 
     break;
   case 7:
+    // Eternal hell
     for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
         r3y = 0;
