@@ -254,12 +254,24 @@ function appendEccToData(dataBlock: number, neccBlock1: number, neccBlock2: numb
   }
 }
 
+/* All Mask types with visible descriptions. */
+enum MaskType {
+  ALTERNATING_TILES,
+  ALTERNATING_HORIZONTAL_LINES,
+  ALTERNATING_VERTICAL_LINES_TWO_GAP,
+  DIAGONAL,
+  FOUR_BY_TWO_RECTANGLE_ALTERNATING,
+  FLOWER_IN_SQAURE,
+  DIAGONAL_SQUARE,
+  ALTERNATING_PUZZLE_PIECE
+}
+
 /** 
  * Applies a mask to the buffer
  */
-function applyMask(width: number, buffer: BinaryUint8Array, mask: number, currentMask: BinaryUint8Array) {
+function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskType, currentMask: BinaryUint8Array) {
   switch (mask) {
-  case 0:
+  case MaskType.ALTERNATING_TILES:
     /* This mask goes as:
     * 10101010101
     * 01010101010
@@ -272,7 +284,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     }
 
     break;
-  case 1:
+  case MaskType.ALTERNATING_HORIZONTAL_LINES:
     // Alternating straight lines. The first line is 1, the second is 0, and so forth
     for (let y = 0; y < width; y++) {
       if (y % 2) { // every other line
@@ -285,7 +297,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     }
 
     break;
-  case 2:
+  case MaskType.ALTERNATING_VERTICAL_LINES_TWO_GAP:
     // Vertical straight lines, with the pattern: 1001001
     for (let x = 0; x < width; x++) {
       if (!(x % 3)) { // only does it every 3 lines (gap 2)
@@ -298,7 +310,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     }
 
     break;
-  case 3:
+  case MaskType.DIAGONAL:
     // Diagonal lines, as so:
     // 01001
     // 10010
@@ -322,7 +334,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     }
 
     break;
-  case 4:
+  case MaskType.FOUR_BY_TWO_RECTANGLE_ALTERNATING:
     for (let y = 0; y < width; y++) {
       for (let r3x = 0, r3y = (y >> 1) & 1, x = 0; x < width; x++, r3x++) {
         if (r3x === 3) {
@@ -337,7 +349,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     }
 
     break;
-  case 5:
+  case MaskType.FLOWER_IN_SQAURE:
     for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
         r3y = 0;
@@ -355,7 +367,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     }
 
     break;
-  case 6:
+  case MaskType.DIAGONAL_SQUARE:
     for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
         r3y = 0;
@@ -373,7 +385,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: number, curren
     }
 
     break;
-  case 7:
+  case MaskType.ALTERNATING_PUZZLE_PIECE:
     // Eternal hell
     for (let r3y = 0, y = 0; y < width; y++, r3y++) {
       if (r3y === 3) {
@@ -577,6 +589,8 @@ function finish(level: number, badness: number[], buffer: BinaryUint8Array, widt
     * a better one since they get more complex and take longer.
     * 
     * There are 7 different mask patterns, and this for loop checks each of them.
+    * 
+    * MaskType
     */
   for (i = 0; i < 8; i++) {
     // Returns foreground-background imbalance.

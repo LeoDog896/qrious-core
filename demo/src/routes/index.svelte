@@ -11,7 +11,8 @@
   type TextOption = Option<string, "text">;
   type BooleanOption = Option<boolean, "boolean">;
   type ColorOption = Option<string, "color">
-  type Options = { readonly [key: string] : TextOption | BooleanOption | ColorOption }
+  type NumberOption = Option<number, "number">
+  type Options = { readonly [key: string] : TextOption | BooleanOption | ColorOption | NumberOption }
 
   interface RenderSystem {
     name: string,
@@ -58,16 +59,18 @@
   }, {
     type: "text",
     name: "ASCII",
-    render: (value, options) => renderText({ 
+    render: (value, { foregroundChar, backgroundChar, thickness }) => renderText({ 
       value,
-      foregroundChar: options.foregroundChar.value as string,
-      backgroundChar: options.backgroundChar.value as string
-    }),
+      foregroundChar: (foregroundChar.value as string).repeat(thickness.value as number),
+      backgroundChar: (backgroundChar.value as string).repeat(thickness.value as number)
+    }).split("\n").map(it => (it + "\n")
+      .repeat(thickness.value as number).slice(0, -1)).join("\n"),
     lineSpacing: ".75rem",
     tracking: "0",
     options: { 
       foregroundChar: { type: "text", name: "Foreground Character", value: "#", defaultValue: "#" },
-      backgroundChar: { type: "text", name: "Background Character", value: " ", defaultValue: " "}
+      backgroundChar: { type: "text", name: "Background Character", value: " ", defaultValue: " " },
+      thickness: { type: "number", name: "Thickness", value: 1, defaultValue: 1 }
     }
   }]
 
@@ -117,12 +120,13 @@
     <div class="m-4 flex flex-row">
       {#each Object.values(selectedRenderSystem.options) as option}
         <div>
+          <label for={option.name}>{option.name}</label>
           {#if option.type == "text"}
-            <label for={option.name}>{option.name}</label>
             <input id={option.name} class="border-b" bind:value={option.value} placeholder={option.name}/>
           {:else if option.type == "color"}
-            <label for={option.name}>{option.name}</label>
-            <input class="h-10" type="color" bind:value={option.value}>
+            <input type="color" bind:value={option.value}>
+          {:else if option.type == "number"}
+            <input type="number" bind:value={option.value}>
           {/if}
         </div>
       {/each}
