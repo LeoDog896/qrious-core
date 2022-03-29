@@ -2,6 +2,11 @@
 
 A simple scanning library.
 
+## Install
+```bash
+npm i scannable
+```
+
 ## QR
 
 ```ts
