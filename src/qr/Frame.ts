@@ -85,7 +85,7 @@ function modN(x: number): number {
   return x % 255;
 }
 
-function getBadness(length: number, badness: readonly number[]) {
+function getBadness(length: number, badness: Uint8Array) {
   let badRuns = 0;
 
   for (let i = 0; i <= length; i++) {
@@ -256,14 +256,14 @@ function appendEccToData(dataBlock: number, neccBlock1: number, neccBlock2: numb
 
 /* All Mask types with visible descriptions. */
 enum MaskType {
-  ALTERNATING_TILES,
-  ALTERNATING_HORIZONTAL_LINES,
-  ALTERNATING_VERTICAL_LINES_TWO_GAP,
-  DIAGONAL,
-  FOUR_BY_TWO_RECTANGLE_ALTERNATING,
-  FLOWER_IN_SQAURE,
-  DIAGONAL_SQUARE,
-  ALTERNATING_PUZZLE_PIECE
+  ALTERNATING_TILES = 0,
+  ALTERNATING_HORIZONTAL_LINES = 1,
+  ALTERNATING_VERTICAL_LINES_TWO_GAP = 2,
+  DIAGONAL = 3,
+  FOUR_BY_TWO_RECTANGLE_ALTERNATING = 4,
+  FLOWER_IN_SQAURE = 5,
+  DIAGONAL_SQUARE = 6,
+  ALTERNATING_PUZZLE_PIECE = 7
 }
 
 /** 
@@ -428,7 +428,10 @@ function calculatePolynomial(eccBlock: number): Uint8Array {
   return polynomial;
 }
 
-function checkBadness(badness: number[], buffer: ReadOnlyBinaryUint8Array, width: number) {
+function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number) {
+
+  let badness = new Uint8Array(width);
+
   let b1, h;
   let bad = 0;
 
@@ -579,7 +582,6 @@ function convertBitStream(version: number, value: string, ecc: Uint8Array, dataB
 function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
   // Save pre-mask copy of frame.
   const tempBuffer = new Uint8Array(buffer) as BinaryUint8Array;
-  let badness: number[] = [];
   let currentMask, i;
   let bit = 0;
   let mask = 30000;
@@ -596,7 +598,7 @@ function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurre
     // Returns foreground-background imbalance.
     applyMask(width, buffer, i, oldCurrentMask);
 
-    currentMask = checkBadness(badness, buffer, width);
+    currentMask = checkBadness(buffer, width);
 
     // Is current mask better than previous best?
     if (currentMask < mask) {
