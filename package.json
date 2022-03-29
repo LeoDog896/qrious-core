@@ -1,6 +1,6 @@
 {
   "name": "scannable",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "description": "A general purpose scannable creation library.",
   "homepage": "https://github.com/LeoDog896/scannable",
   "bugs": {
@@ -33,13 +33,14 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsdx build",
+    "build": "tsdx build --format esm",
     "test": "tsdx test",
     "test:watch": "tsdx test --watch",
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "analyze": "size-limit --why",
+    "prepublish": "npm run build && npm run size && eslint"
   },
   "husky": {
     "hooks": {
@@ -52,14 +53,10 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "module": "dist/qrious-core.esm.js",
+  "module": "dist/scannable.esm.js",
   "size-limit": [
     {
-      "path": "dist/qrious-core.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/qrious-core.esm.js",
+      "path": "dist/scannable.esm.js",
       "limit": "10 KB"
     }
   ],

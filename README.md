@@ -1,13 +1,15 @@
 # scannable
 
-A simple scanning library.
+A simple scanning generation library.
+
+Check out the demo: https://leodog896.github.io/scannable
 
 ## Install
 ```bash
 npm i scannable
 ```
 
-## QR
+## QR Generation
 
 ```ts
 import { renderText, renderTwoTone, renderCanvas } from 'scannable/qr';
