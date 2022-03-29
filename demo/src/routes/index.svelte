@@ -31,6 +31,14 @@
   }
 
   const renderSystems: AnyRenderSystem[] = [{
+    type: "canvas",
+    name: "Simple Image",
+    render: (value, canvas) => {
+      clearCanvas(canvas)
+      renderCanvas({ value, height: 150 }, canvas)
+    },
+    options: []
+  }, {
     type: "text",
     name: "Unicode",
     render: renderTwoTone,
@@ -43,14 +51,6 @@
     render: renderText,
     lineSpacing: ".75rem",
     tracking: "0",
-    options: []
-  }, {
-    type: "canvas",
-    name: "Simple Image",
-    render: (value, canvas) => {
-      clearCanvas(canvas)
-      renderCanvas({ value, height: 150 }, canvas)
-    },
     options: []
   }]
 
