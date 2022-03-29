@@ -1,15 +1,21 @@
 <script lang="ts">
-  import { renderText, renderTwoTone } from "../../../src/qr"
+  import { renderCanvas, renderText, renderTwoTone } from "../../../src/qr"
   interface RenderSystem {
     name: string,
-    render: (value: string) => string
+    options: Option[]
+  }
+
+  interface CanvasRenderSystem extends RenderSystem {
+    type: "canvas";
+    render: (value: string, canvas: HTMLCanvasElement) => void;
+    currentCanvas?: HTMLCanvasElement;
   }
 
   interface TextRenderSystem extends RenderSystem {
-    type: "text",
-    lineSpacing: string,
-    tracking: string,
-    options: Option[]
+    type: "text";
+    lineSpacing: string;
+    tracking: string;
+    render: (value: string) => string;
   }
 
   enum OptionType {
@@ -17,7 +23,7 @@
     COLOR
   }
 
-  type AnyRenderSystem = TextRenderSystem
+  type AnyRenderSystem = TextRenderSystem | CanvasRenderSystem
 
   interface Option {
     name: string;
@@ -38,8 +44,21 @@
     lineSpacing: ".75rem",
     tracking: "0",
     options: []
+  }, {
+    type: "canvas",
+    name: "Simple Image",
+    render: (value, canvas) => {
+      clearCanvas(canvas)
+      renderCanvas({ value, height: 150 }, canvas)
+    },
+    options: []
   }]
 
+  function clearCanvas(canvas: HTMLCanvasElement) {
+    canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  $: if (selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas) selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas)
 
   let selectedRenderSystem = renderSystems[0]
   let value = ""
@@ -52,25 +71,27 @@
         placeholder="Type URL here (EX: https://example.com)"
         class="flex-grow w-full text-center" bind:value={value}
       />
-      <h1 class="font-mono text-center my-10" style="
-      line-height: {selectedRenderSystem.lineSpacing};
-      letter-spacing: {selectedRenderSystem.tracking}
-      ">
-        {@html selectedRenderSystem
-          .render(value)
-          .replaceAll("\n", "<br/>")
-          .replaceAll(" ", "&nbsp;")
-        }
-      </h1>
+      {#if selectedRenderSystem.type == "text"}
+        <h1 class="font-mono text-center my-10" style="
+        line-height: {selectedRenderSystem.lineSpacing};
+        letter-spacing: {selectedRenderSystem.tracking}
+        ">
+          {@html selectedRenderSystem
+            .render(value)
+            .replaceAll("\n", "<br/>")
+            .replaceAll(" ", "&nbsp;")
+          }
+        </h1>
+      {:else if selectedRenderSystem.type == "canvas"}
+        <canvas class="m-auto w-[300px] h-[300px]" bind:this={selectedRenderSystem.currentCanvas} />
+      {/if}
     </div>
     <div class="flex-shrink flex flex-col w-32 ">
-      {#each renderSystems as renderSystem, i}
-        {#if renderSystem.type == "text"}
-          <div tabindex=0 class="
-            w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300
-            hover:cursor-pointer transition-colors p-4
-          " on:click={() => {selectedRenderSystem = renderSystem}}>{renderSystem.name}</div>
-        {/if}
+      {#each renderSystems as renderSystem}
+        <div tabindex=0 class="
+          w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300
+          hover:cursor-pointer transition-colors p-4
+        " on:click={() => {selectedRenderSystem = renderSystem}}>{renderSystem.name}</div>
       {/each}
     </div>
   </div>

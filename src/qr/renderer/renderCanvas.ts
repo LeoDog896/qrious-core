@@ -5,17 +5,21 @@ import { getModuleSize } from './utils';
 export const renderContext = (
   options: UserFacingFrameOptions<ImageLikeRenderOptions> | string,
   context: CanvasRenderingContext2D,
-  width?: number
+  width?: number,
+  height?: number
 ) => {
   const processedOptions: ImageLikeRenderOptions = { 
     ...defaultImageLikeRenderOptions,
-    ...(typeof options === 'string' ? { value: options } : options) 
+    width: width ?? context.canvas.clientWidth,
+    height: height ?? context.canvas.clientHeight,
+    ...(typeof options === 'string' ? { value: options } : options),
   };
-
-  const moduleSize = getModuleSize(width ?? context.canvas.width, processedOptions.size);
   
   const frame = generateFrame(processedOptions);
   
+  const moduleSizeWidth = getModuleSize(frame.width, processedOptions.width);
+  const moduleSizeHeight = getModuleSize(frame.width, processedOptions.height);
+
   context.fillStyle = processedOptions.foregroundColor;
   context.globalAlpha = processedOptions.foregroundAlpha;
 
@@ -23,9 +27,9 @@ export const renderContext = (
     for (let j = 0; j < frame.width; j++) {
       if (frame.buffer[(j * frame.width) + i]) {
         context.fillRect(
-          (moduleSize * i),
-          (moduleSize * j),
-          moduleSize, moduleSize
+          (moduleSizeWidth * i),
+          (moduleSizeHeight * j),
+          moduleSizeWidth, moduleSizeHeight
         );
       }
     }

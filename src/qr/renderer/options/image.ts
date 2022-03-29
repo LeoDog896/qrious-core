@@ -5,7 +5,8 @@ export interface ImageLikeRenderOptions extends FrameOptions {
   readonly backgroundAlpha: number;
   readonly foregroundColor: string;
   readonly foregroundAlpha: number;
-  readonly size: number;
+  readonly width: number;
+  readonly height: number;
 }
 
 export const defaultImageLikeRenderOptions: RenderOptionsDefaults<ImageLikeRenderOptions> = Object.freeze({
@@ -13,6 +14,7 @@ export const defaultImageLikeRenderOptions: RenderOptionsDefaults<ImageLikeRende
   backgroundAlpha: 1,
   foregroundColor: 'black',
   foregroundAlpha: 1,
-  size: 100,
+  width: 100,
+  height: 100,
   ...defaultFrameOptions
 });

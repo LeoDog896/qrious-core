@@ -5,17 +5,14 @@
  * each module would be 2x2.
  * 
  * @param frameWidth - The width of the QR code (frame)
- * @param size - The size the qr code is being rendered on.
+ * @param size - The size of the qr code
  * 
  * @example getModuleSize(frame.width, 100)
  * 
  * @returns The width of the module.
  */
-export const getModuleSize = (frameWidth: number, size: number): number => {
-  // The amount of pixels that one module takes.
-  // Math.floor restricts it to the lowest whole number.
-  // (This avoids subpixels)
-  const pixels = Math.floor((size) / frameWidth);
+export const getModuleSize = (size: number, frameSize: number): number => {
+  const pixels = Math.floor(frameSize / size);
 
   // Restricted from 1-? to avoid modules being rendered lower than the resolution.
   return Math.max(1, pixels);
