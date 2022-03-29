@@ -68,23 +68,6 @@ function getMaskBit(x: number, y: number): number {
   return bit;
 }
 
-/**
- * Using the modulus function, attempts to return an unsigned byte.
- * 
- * This does **not** check negative numbers
- * 
- * @param x - The number to turn into a ubyte
- * 
- * @example 
- * modN(256) // 1
- * modN(100) // 100
- * 
- * @return a ubyte if the number isn't negative
- */
-function modN(x: number): number {
-  return x % 255;
-}
-
 function getBadness(length: number, badness: Uint8Array) {
   let badRuns = 0;
 
@@ -219,7 +202,7 @@ function appendData(data: number, dataLength: number, ecc: number, eccLength: nu
     if (bit !== 255) {
       for (let j = 1; j < eccLength; j++) {
         stringBuffer[ecc + j - 1] = stringBuffer[ecc + j] ^
-          Galois.EXPONENT[modN(bit + polynomial[eccLength - j])];
+          Galois.EXPONENT[(bit + polynomial[eccLength - j]) % 255];
       }
     } else {
       for (let j = ecc; j < ecc + eccLength; j++) {
@@ -227,7 +210,7 @@ function appendData(data: number, dataLength: number, ecc: number, eccLength: nu
       }
     }
 
-    stringBuffer[ecc + eccLength - 1] = bit === 255 ? 0 : Galois.EXPONENT[modN(bit + polynomial[0])];
+    stringBuffer[ecc + eccLength - 1] = bit === 255 ? 0 : Galois.EXPONENT[(bit + polynomial[0]) % 255];
   }
 }
 
@@ -414,10 +397,10 @@ function calculatePolynomial(eccBlock: number): Uint8Array {
   for (let i = 1; i < eccBlock; i++) {
     for (let j = i; j > 0; j--) {
       polynomial[j] = polynomial[j] ? polynomial[j - 1] ^
-        Galois.EXPONENT[modN(Galois.LOG[polynomial[j]] + i)] : polynomial[j - 1];
+        Galois.EXPONENT[(Galois.LOG[polynomial[j]] + i) % 255] : polynomial[j - 1];
     }
 
-    polynomial[0] = Galois.EXPONENT[modN(Galois.LOG[polynomial[0]] + i)];
+    polynomial[0] = Galois.EXPONENT[(Galois.LOG[polynomial[0]] + i) % 255];
   }
 
   // Use logs for generator polynomial to save calculation step.
