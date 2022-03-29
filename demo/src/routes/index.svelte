@@ -1,16 +1,18 @@
 <script lang="ts">
   import { renderCanvas, renderText, renderTwoTone } from "../../../src/qr"
 
-  interface Option<T> {
+  interface Option<T, R> {
     readonly name: string;
-    readonly type: string;
+    readonly type: R;
     value: T;
     readonly defaultValue: T;
   }
 
-  type TextOption = Option<string>;
-  type BooleanOption = Option<boolean>;
-  type Options = { [key: string] : TextOption | BooleanOption }
+  type TextOption = Option<string, "text">;
+  type BooleanOption = Option<boolean, "boolean">;
+  type ColorOption = Option<string, "color">
+  type Options = { readonly [key: string] : TextOption | BooleanOption | ColorOption }
+
   interface RenderSystem {
     name: string,
     options: Options
@@ -18,7 +20,7 @@
 
   interface CanvasRenderSystem extends RenderSystem {
     type: "canvas";
-    render: (value: string, canvas: HTMLCanvasElement) => void;
+    render: (value: string, canvas: HTMLCanvasElement, options: Options) => void;
     currentCanvas?: HTMLCanvasElement;
   }
 
@@ -34,11 +36,18 @@
   const renderSystems: AnyRenderSystem[] = [{
     type: "canvas",
     name: "Simple Image",
-    render: (value, canvas) => {
+    render: (value, canvas, options) => {
       clearCanvas(canvas)
-      renderCanvas({ value }, canvas)
+      renderCanvas({ 
+        value, 
+        foregroundColor: options.foregroundColor.value as string,
+        backgroundColor: options.backgroundColor.value as string
+      }, canvas)
     },
-    options: {}
+    options: {
+      foregroundColor: { type: "color", name: "Foreground Color", value: "#000000", defaultValue: "#000000" },
+      backgroundColor: { type: "color", name: "Background Color", value: "#ffffff", defaultValue: "#ffffff" }
+    }
   }, {
     type: "text",
     name: "Unicode",
@@ -66,7 +75,8 @@
     canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height)
   }
 
-  $: if (selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas) selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas)
+  $: if (selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas) 
+    selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options)
 
   let selectedRenderSystem = renderSystems[0]
   let value = ""
@@ -110,6 +120,9 @@
           {#if option.type == "text"}
             <label for={option.name}>{option.name}</label>
             <input id={option.name} class="border-b" bind:value={option.value} placeholder={option.name}/>
+          {:else if option.type == "color"}
+            <label for={option.name}>{option.name}</label>
+            <input class="h-10" type="color" bind:value={option.value}>
           {/if}
         </div>
       {/each}

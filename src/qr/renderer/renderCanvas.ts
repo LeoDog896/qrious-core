@@ -20,12 +20,19 @@ export const renderContext = (
   const moduleSizeWidth = getModuleSize(frame.width, processedOptions.width);
   const moduleSizeHeight = getModuleSize(frame.width, processedOptions.height);
 
-  context.fillStyle = processedOptions.foregroundColor;
-  context.globalAlpha = processedOptions.foregroundAlpha;
-
   for (let i = 0; i < frame.width; i++) {
     for (let j = 0; j < frame.width; j++) {
       if (frame.buffer[(j * frame.width) + i]) {
+        context.fillStyle = processedOptions.foregroundColor;
+        context.globalAlpha = processedOptions.foregroundAlpha;
+        context.fillRect(
+          (moduleSizeWidth * i),
+          (moduleSizeHeight * j),
+          moduleSizeWidth, moduleSizeHeight
+        );
+      } else {
+        context.fillStyle = processedOptions.backgroundColor;
+        context.globalAlpha = processedOptions.backgroundAlpha;
         context.fillRect(
           (moduleSizeWidth * i),
           (moduleSizeHeight * j),
