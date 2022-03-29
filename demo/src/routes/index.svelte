@@ -1,8 +1,18 @@
 <script lang="ts">
   import { renderCanvas, renderText, renderTwoTone } from "../../../src/qr"
+
+  interface Option<T> {
+    name: string;
+    type: string;
+    value: T
+  }
+
+  type TextOption = Option<string>;
+  type BooleanOption = Option<boolean>;
+  type Options = { [key: string] : TextOption | BooleanOption }
   interface RenderSystem {
     name: string,
-    options: Option[]
+    options: Options
   }
 
   interface CanvasRenderSystem extends RenderSystem {
@@ -15,20 +25,10 @@
     type: "text";
     lineSpacing: string;
     tracking: string;
-    render: (value: string) => string;
-  }
-
-  enum OptionType {
-    BOOLEAN,
-    COLOR
+    render: (value: string, options: Options) => string;
   }
 
   type AnyRenderSystem = TextRenderSystem | CanvasRenderSystem
-
-  interface Option {
-    name: string;
-    type: OptionType;
-  }
 
   const renderSystems: AnyRenderSystem[] = [{
     type: "canvas",
@@ -37,21 +37,21 @@
       clearCanvas(canvas)
       renderCanvas({ value }, canvas)
     },
-    options: []
+    options: {}
   }, {
     type: "text",
     name: "Unicode",
     render: renderTwoTone,
     lineSpacing: "1.1rem",
     tracking: "-0.05em",
-    options: []
+    options: {}
   }, {
     type: "text",
     name: "ASCII",
-    render: renderText,
+    render: (value, options) => renderText({ value, foregroundChar: options.foregroundChar.value as string }),
     lineSpacing: ".75rem",
     tracking: "0",
-    options: []
+    options: { foregroundChar: { type: "text", name: "Foreground Character", value: "#" }}
   }]
 
   function clearCanvas(canvas: HTMLCanvasElement) {
@@ -77,7 +77,7 @@
         letter-spacing: {selectedRenderSystem.tracking}
         ">
           {@html selectedRenderSystem
-            .render(value)
+            .render(value, selectedRenderSystem.options)
             .replaceAll("\n", "<br/>")
             .replaceAll(" ", "&nbsp;")
           }
@@ -96,6 +96,10 @@
     </div>
   </div>
   <div class="flex-row">
-    
+    {#each Object.values(selectedRenderSystem.options) as option}
+      {#if option.type == "text"}
+        <input bind:value={option.value} placeholder={option.name}/>
+      {/if}
+    {/each}
   </div>
 </div>
