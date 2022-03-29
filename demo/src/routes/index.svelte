@@ -35,7 +35,7 @@
     name: "Simple Image",
     render: (value, canvas) => {
       clearCanvas(canvas)
-      renderCanvas({ value, height: 150 }, canvas)
+      renderCanvas({ value }, canvas)
     },
     options: []
   }, {
@@ -83,7 +83,7 @@
           }
         </h1>
       {:else if selectedRenderSystem.type == "canvas"}
-        <canvas class="m-auto w-[300px] h-[300px]" bind:this={selectedRenderSystem.currentCanvas} />
+        <canvas class="m-auto w-[300px] h-[300px]" height=300 width=300 bind:this={selectedRenderSystem.currentCanvas} />
       {/if}
     </div>
     <div class="flex-shrink flex flex-col w-32 ">
