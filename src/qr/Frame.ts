@@ -576,10 +576,10 @@ function convertBitStream(version: number, value: string, ecc: Uint8Array, dataB
   return ecc;
 }
 
-function finish(level: number, badness: number[], buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
+function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
   // Save pre-mask copy of frame.
   const tempBuffer = new Uint8Array(buffer) as BinaryUint8Array;
-
+  let badness: number[] = [];
   let currentMask, i;
   let bit = 0;
   let mask = 30000;
@@ -910,8 +910,6 @@ export function generateFrame(options: UserFacingFrameOptions): FrameResults {
     dataBlock, eccBlock 
   } = generateVersionsAndBlocks(options.value.length, level);
 
-  const badness: number[] = [];
-
   // FIXME: Ensure that it fits instead of being truncated.
   const width = 17 + (4 * version);
 
@@ -937,7 +935,7 @@ export function generateFrame(options: UserFacingFrameOptions): FrameResults {
   appendEccToData(dataBlock, neccBlock1, neccBlock2, eccBlock, polynomial, stringBuffer);
   const newStringBuffer = interleaveBlocks(ecc, eccBlock, dataBlock, neccBlock1, neccBlock2, stringBuffer.slice());
   pack(width, dataBlock, eccBlock, neccBlock1, neccBlock2, mask, buffer, newStringBuffer);
-  buffer = finish(level, badness, buffer, width, mask);
+  buffer = finish(level, buffer, width, mask);
 
   return {
     width,
