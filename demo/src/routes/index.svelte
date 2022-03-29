@@ -59,18 +59,21 @@
   }, {
     type: "text",
     name: "ASCII",
-    render: (value, { foregroundChar, backgroundChar, thickness }) => renderText({ 
+    render: (value, { foregroundChar, backgroundChar, thickness, inverse }) => renderText({ 
       value,
-      foregroundChar: (foregroundChar.value as string).repeat(thickness.value as number),
-      backgroundChar: (backgroundChar.value as string).repeat(thickness.value as number)
-    }).split("\n").map(it => (it + "\n")
-      .repeat(thickness.value as number).slice(0, -1)).join("\n"),
+      foregroundChar: (inverse.value ? backgroundChar.value as string : foregroundChar.value as string).repeat(thickness.value as number),
+      backgroundChar: (inverse.value ? foregroundChar.value as string : backgroundChar.value as string).repeat(thickness.value as number)
+    }).split("\n")
+      .map(it => (it + "\n").repeat(thickness.value as number).slice(0, -1))
+      .join("\n"),
     lineSpacing: ".75rem",
     tracking: "0",
     options: { 
-      foregroundChar: { type: "text", name: "Foreground Character", value: "#", defaultValue: "#" },
+      foregroundChar: { type: "text", name: "Foreground Character", value: "%", defaultValue: "%" },
       backgroundChar: { type: "text", name: "Background Character", value: " ", defaultValue: " " },
-      thickness: { type: "number", name: "Thickness", value: 1, defaultValue: 1 }
+      thickness: { type: "number", name: "Thickness", value: 1, defaultValue: 1 },
+      padding: { type: "number", name: "Padding", value: 0, defaultValue: 0 },
+      inverse: { type: "boolean", name: "Inverse", value: false, defaultValue: false }
     }
   }]
 
@@ -127,6 +130,8 @@
             <input type="color" bind:value={option.value}>
           {:else if option.type == "number"}
             <input type="number" bind:value={option.value}>
+          {:else if option.type == "boolean"}
+            <input type="checkbox" bind:checked={option.value}>
           {/if}
         </div>
       {/each}
