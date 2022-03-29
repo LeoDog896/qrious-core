@@ -1,8 +1,8 @@
 <script lang="ts">
   import { renderCanvas, renderText, renderTwoTone } from "../../../src/qr"
-  import type { AnyRenderSystem } from "./rendererTypes";
+  import { createRenderSystems } from "./rendererTypes";
 
-  const renderSystems: AnyRenderSystem[] = [{
+  const renderSystems = createRenderSystems([{
     type: "canvas",
     name: "Simple Image",
     render: (value, canvas, options) => {
@@ -27,12 +27,12 @@
   }, {
     type: "text",
     name: "ASCII",
-    render: (value, { foregroundChar, backgroundChar, thickness, inverse }) => renderText({ 
+    render: (value, { foregroundChar, backgroundChar, thickness, inverse, padding }) => renderText({ 
       value,
-      foregroundChar: (inverse.value ? backgroundChar.value as string : foregroundChar.value as string).repeat(thickness.value as number),
-      backgroundChar: (inverse.value ? foregroundChar.value as string : backgroundChar.value as string).repeat(thickness.value as number)
+      foregroundChar: (inverse.value ? backgroundChar.value : foregroundChar.value).repeat(thickness.value),
+      backgroundChar: (inverse.value ? foregroundChar.value : backgroundChar.value).repeat(thickness.value)
     }).split("\n")
-      .map(it => (it + "\n").repeat(thickness.value as number).slice(0, -1))
+      .map(it => (it + "\n").repeat(thickness.value).padStart(padding.value, backgroundChar.value).padEnd(padding.value, foregroundChar.value).slice(0, -1))
       .join("\n"),
     lineSpacing: ".75rem",
     tracking: "0",
@@ -43,7 +43,7 @@
       padding: { type: "number", name: "Padding", value: 0, defaultValue: 0 },
       inverse: { type: "boolean", name: "Inverse", value: false, defaultValue: false }
     }
-  }]
+  }])
 
   function clearCanvas(canvas: HTMLCanvasElement) {
     canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height)
@@ -91,9 +91,9 @@
     <div class="m-4 flex flex-row">
       {#each Object.values(selectedRenderSystem.options) as option}
         <div>
-          <label for={option.name}>{option.name}</label>
+          <label for={option.name}>{option.name}:</label>
           {#if option.type == "text"}
-            <input id={option.name} class="border-b" bind:value={option.value} placeholder={option.name}/>
+            <input id={option.name} class="transition-all border-b outline-none focus:border-sky-500 focus:border-b-2" bind:value={option.value} placeholder={option.name}/>
           {:else if option.type == "color"}
             <input type="color" bind:value={option.value}>
           {:else if option.type == "number"}

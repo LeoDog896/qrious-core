@@ -9,24 +9,36 @@ type TextOption = Option<string, "text">;
 type BooleanOption = Option<boolean, "boolean">;
 type ColorOption = Option<string, "color">
 type NumberOption = Option<number, "number">
-type Options = { readonly [key: string] : TextOption | BooleanOption | ColorOption | NumberOption }
+type OptionsAdvanced = { readonly [key: string] : TextOption | BooleanOption | ColorOption | NumberOption }
 
-interface RenderSystem {
-  name: string,
-  options: Options
-}
 
-interface CanvasRenderSystem extends RenderSystem {
-  type: "canvas";
-  render: (value: string, canvas: HTMLCanvasElement, options: Options) => void;
-  currentCanvas?: HTMLCanvasElement;
-}
 
-interface TextRenderSystem extends RenderSystem {
+type ReturnCreateOptionsAdvanced<T extends OptionsAdvanced> = 
+  {
+    [K in keyof T]: 
+      T[K]['type'] extends 'text'
+        ? TextOption
+      : T[K]['type'] extends 'boolean'
+        ? BooleanOption
+      : T[K]['type'] extends 'color'
+        ? ColorOption
+      : NumberOption
+  }
+
+type RenderSystemParam<OptionsType extends ReturnCreateOptionsAdvanced<any>> = 
+// Default Render System Key/Value
+({
+  name: string
+  options: OptionsType
+} & ({ //Canvas
+  type: 'canvas';
+  render: (value: string, canvas: HTMLCanvasElement, options: OptionsType) => void
+  currentCanvas?: HTMLCanvasElement
+} | { // Text
   type: "text";
   lineSpacing: string;
   tracking: string;
-  render: (value: string, options: Options) => string;
-}
+  render: (value: string, options: OptionsType) => string;
+}))[]
 
-export type AnyRenderSystem = TextRenderSystem | CanvasRenderSystem
+export const createRenderSystems = <T extends ReturnCreateOptionsAdvanced<any>>(o: RenderSystemParam<T>): RenderSystemParam<T> => o;
