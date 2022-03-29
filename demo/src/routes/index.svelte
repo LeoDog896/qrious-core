@@ -2,9 +2,10 @@
   import { renderCanvas, renderText, renderTwoTone } from "../../../src/qr"
 
   interface Option<T> {
-    name: string;
-    type: string;
-    value: T
+    readonly name: string;
+    readonly type: string;
+    value: T;
+    readonly defaultValue: T;
   }
 
   type TextOption = Option<string>;
@@ -48,10 +49,17 @@
   }, {
     type: "text",
     name: "ASCII",
-    render: (value, options) => renderText({ value, foregroundChar: options.foregroundChar.value as string }),
+    render: (value, options) => renderText({ 
+      value,
+      foregroundChar: options.foregroundChar.value as string,
+      backgroundChar: options.backgroundChar.value as string
+    }),
     lineSpacing: ".75rem",
     tracking: "0",
-    options: { foregroundChar: { type: "text", name: "Foreground Character", value: "#" }}
+    options: { 
+      foregroundChar: { type: "text", name: "Foreground Character", value: "#", defaultValue: "#" },
+      backgroundChar: { type: "text", name: "Background Character", value: " ", defaultValue: " "}
+    }
   }]
 
   function clearCanvas(canvas: HTMLCanvasElement) {
@@ -96,10 +104,15 @@
     </div>
   </div>
   <div class="flex-row">
-    {#each Object.values(selectedRenderSystem.options) as option}
-      {#if option.type == "text"}
-        <input bind:value={option.value} placeholder={option.name}/>
-      {/if}
-    {/each}
+    <div class="m-4 flex flex-row">
+      {#each Object.values(selectedRenderSystem.options) as option}
+        <div>
+          {#if option.type == "text"}
+            <label for={option.name}>{option.name}</label>
+            <input id={option.name} class="border-b" bind:value={option.value} placeholder={option.name}/>
+          {/if}
+        </div>
+      {/each}
+    </div>
   </div>
 </div>
