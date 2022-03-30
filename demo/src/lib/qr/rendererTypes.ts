@@ -11,8 +11,6 @@ type ColorOption = Option<string, "color">
 type NumberOption = Option<number, "number">
 type OptionsAdvanced = { readonly [key: string] : TextOption | BooleanOption | ColorOption | NumberOption }
 
-
-
 type ReturnCreateOptionsAdvanced<T extends OptionsAdvanced> = 
   {
     [K in keyof T]: 
@@ -25,7 +23,7 @@ type ReturnCreateOptionsAdvanced<T extends OptionsAdvanced> =
       : NumberOption
   }
 
-type RenderSystemParam<OptionsType extends ReturnCreateOptionsAdvanced<any>> = 
+export type RenderSystem<OptionsType extends ReturnCreateOptionsAdvanced<OptionsAdvanced>> = 
 // Default Render System Key/Value
 ({
   name: string
@@ -39,6 +37,6 @@ type RenderSystemParam<OptionsType extends ReturnCreateOptionsAdvanced<any>> =
   lineSpacing: string;
   tracking: string;
   render: (value: string, options: OptionsType) => string;
-}))[]
+}))
 
-export const createRenderSystems = <T extends ReturnCreateOptionsAdvanced<any>>(o: RenderSystemParam<T>): RenderSystemParam<T> => o;
+export const createRenderSystems = <T extends ReturnCreateOptionsAdvanced<any>>(o: RenderSystem<T>[]): RenderSystem<T>[] => o;

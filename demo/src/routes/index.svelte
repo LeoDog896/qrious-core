@@ -1,6 +1,7 @@
 <script lang="ts">
   import { renderCanvas, renderText, renderTwoTone } from "../../../src/qr"
-  import { createRenderSystems } from "./rendererTypes";
+  import RenderSystemDisplay from "$lib/qr/RenderSystem.svelte";
+  import { createRenderSystems } from "$lib/qr/rendererTypes";
 
   const renderSystems = createRenderSystems([{
     type: "canvas",
@@ -28,12 +29,15 @@
     type: "text",
     name: "ASCII",
     render: (value, { foregroundChar, backgroundChar, thickness, inverse, padding }) => renderText({ 
-      value,
-      foregroundChar: (inverse.value ? backgroundChar.value : foregroundChar.value).repeat(thickness.value),
-      backgroundChar: (inverse.value ? foregroundChar.value : backgroundChar.value).repeat(thickness.value)
+      value, // NOTE: foreground = 0, background = 1
+      foregroundChar: "0".repeat(thickness.value),
+      backgroundChar: "1".repeat(thickness.value)
     }).split("\n")
-      .map(it => (it + "\n").repeat(thickness.value).padStart(padding.value, backgroundChar.value).padEnd(padding.value, foregroundChar.value).slice(0, -1))
-      .join("\n"),
+      .map(it => "1".repeat(padding.value) + it + "1".repeat(padding.value)) // padding
+      .map(it => (it + "\n").repeat(thickness.value).slice(0, -1)) // thickness
+      .join("\n")
+      .replaceAll("0", inverse.value ? backgroundChar.value : foregroundChar.value)
+      .replaceAll("1", inverse.value ? foregroundChar.value : backgroundChar.value),
     lineSpacing: ".75rem",
     tracking: "0",
     options: { 
@@ -49,9 +53,6 @@
     canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height)
   }
 
-  $: if (selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas) 
-    selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options)
-
   let selectedRenderSystem = renderSystems[0]
   let value = ""
 
@@ -63,22 +64,9 @@
         placeholder="Type URL here (EX: https://example.com)"
         class="flex-grow w-full text-center" bind:value={value}
       />
-      {#if selectedRenderSystem.type == "text"}
-        <h1 class="font-mono text-center my-10" style="
-        line-height: {selectedRenderSystem.lineSpacing};
-        letter-spacing: {selectedRenderSystem.tracking}
-        ">
-          {@html selectedRenderSystem
-            .render(value, selectedRenderSystem.options)
-            .replaceAll("\n", "<br/>")
-            .replaceAll(" ", "&nbsp;")
-          }
-        </h1>
-      {:else if selectedRenderSystem.type == "canvas"}
-        <canvas class="m-auto w-[300px] h-[300px]" height=300 width=300 bind:this={selectedRenderSystem.currentCanvas} />
-      {/if}
+      <RenderSystemDisplay {selectedRenderSystem} {value} />
     </div>
-    <div class="flex-shrink flex flex-col w-32 ">
+    <div class="flex-shrink flex flex-col w-32 h-full bg-gray-100">
       {#each renderSystems as renderSystem}
         <div tabindex=0 class="
           w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300
