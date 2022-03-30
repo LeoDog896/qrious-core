@@ -238,7 +238,7 @@ function appendEccToData(dataBlock: number, neccBlock1: number, neccBlock2: numb
 }
 
 /* All Mask types with visible descriptions. */
-enum MaskType {
+export enum MaskType {
   ALTERNATING_TILES = 0,
   ALTERNATING_HORIZONTAL_LINES = 1,
   ALTERNATING_VERTICAL_LINES_TWO_GAP = 2,
@@ -252,7 +252,7 @@ enum MaskType {
 /** 
  * Applies a mask to the buffer
  */
-function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskType, currentMask: BinaryUint8Array) {
+export function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskType, currentMask: BinaryUint8Array) {
   switch (mask) {
   case MaskType.ALTERNATING_TILES:
     /* This mask goes as:
@@ -390,7 +390,7 @@ function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskType, curr
   }
 }
 
-function calculatePolynomial(eccBlock: number): Uint8Array {
+export function calculatePolynomial(eccBlock: number): Uint8Array {
 
   const polynomial = new Uint8Array(eccBlock).fill(1);
 
