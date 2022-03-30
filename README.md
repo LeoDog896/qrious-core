@@ -1,5 +1,7 @@
 # scannable
 [![npm](https://img.shields.io/npm/v/scannable)](https://npmjs.com/package/scannable)
+[![GitHub](https://img.shields.io/github/license/LeoDog896/scannable?label=license)](https://github.com/LeoDog896/scannable/blob/master/LICENSE)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/scannable)
 
 A simple scanning generation library.
 
