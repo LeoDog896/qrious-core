@@ -41,7 +41,7 @@ export const renderContext = (
       }
     }
   }
-}
+};
 
 export const renderCanvas = (options: UserFacingFrameOptions<ImageLikeRenderOptions> | string , canvas: HTMLCanvasElement) => {
   const context = canvas.getContext('2d');

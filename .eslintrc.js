@@ -28,7 +28,8 @@ module.exports = {
   },
   "rules": {
     "valid-jsdoc": "off",
-    "tsdoc/syntax": "warn",
+    "tsdoc/syntax": "error",
+    "require-jsdoc": "warn",
     "no-console": "error",
     "no-var": "error",
     "prefer-const": "error",
@@ -42,7 +43,7 @@ module.exports = {
         "args": "none"
       }
     ],
-    "functional/functional-parameters": "none",
+    "functional/functional-parameters": "off",
     "@typescript-eslint/prefer-readonly": "error",
     "@typescript-eslint/prefer-nullish-coalescing": "error",
     "@typescript-eslint/prefer-optional-chain": "error",

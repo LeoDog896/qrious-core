@@ -17,11 +17,14 @@ npm i scannable
 ```ts
 import { renderText, renderTwoTone, renderCanvas } from 'scannable/qr';
 
-renderText('https://example.com'); // Outputs a qr code with regular text
+// Outputs a qr code with regular text
+renderText('https://example.com');
 
-renderText({ value: "https://google.com", foregroundChar: "%" }) // You can also specify optoins
+// You can also specify optoins
+renderText({ value: "https://google.com", foregroundChar: "%" })
 
-renderCanvas("https://yahoo.net", coolCanvas) // Or render it to a canvas
+// Or render it to a canvas
+renderCanvas("https://yahoo.net", coolCanvas)
 ```
 
 ## Development

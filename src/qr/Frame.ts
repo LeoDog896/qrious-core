@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-params */
 
 // Bitwise notes:
@@ -29,6 +30,7 @@ export interface FrameOptions {
 /** Utility to make value required for users inputting in a value. */
 export type UserFacingFrameOptions<T = FrameOptions> = Partial<T> & { readonly value: string }
 
+/** Make every option required except for value -- the opposite of UserFacingFrameOptions */
 export type RenderOptionsDefaults<T = FrameOptions> = Omit<T, 'value'> & { readonly value?: string };
 
 /**
@@ -55,6 +57,13 @@ const N3 = 40;
 
 const N4 = 10;
 
+/**
+ * Gets a mask bit at an index.
+ * @param x - The x position to get
+ * @param y - The y position to get
+ * 
+ * @returns The mask bit at that location
+ */
 function getMaskBit(x: number, y: number): number {
   if (x > y) {
     return getMaskBit(y, x);
@@ -99,7 +108,7 @@ function setMask(x: number, y: number, mask: BinaryUint8Array) {
 }
 
 function setMaskIndex(i: number, width: number, mask: BinaryUint8Array) {
-  mask[getMaskBit(i % width, ~~(i / width))] = 1
+  mask[getMaskBit(i % width, ~~(i / width))] = 1;
 }
 
 /**
@@ -122,9 +131,9 @@ function syncMask(width: number, mask: BinaryUint8Array, buffer: ReadOnlyBinaryU
 /**
  * Check if the mask at the x and y position is masked (=== 1)
  * 
- * @param x The x position in the mask
- * @param y The y position in the mask
- * @param mask The mask to check against
+ * @param x - The x position in the mask
+ * @param y - The y position in the mask
+ * @param mask - The mask to check against
  * @returns If the mask at those two positions is masked (=== 1)
  */
 function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number {
@@ -136,9 +145,9 @@ function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number 
 /**
  * Check if the mask at the index position is masked (=== 1)
  * 
- * @param i The index in the buffer
- * @param width The QR code width
- * @param mask The mask to check against
+ * @param i - The index in the buffer
+ * @param width - The QR code width
+ * @param mask - The mask to check against
  * @returns If the mask at the index is masked (=== 1)
  */
 function isMaskedIndex(i: number, width: number, mask: ReadOnlyBinaryUint8Array): number {
@@ -147,6 +156,12 @@ function isMaskedIndex(i: number, width: number, mask: ReadOnlyBinaryUint8Array)
   return mask[bit] & 1;
 }
 
+/**
+ * Generates all versions and block values.
+ *
+ * @param length - The length of the text the QR code is holding
+ * @param level - The error correction level of the QR code.
+ */
 function generateVersionsAndBlocks(length: number, level: number): {
   readonly version: number,
   readonly neccBlock1: number,
@@ -214,6 +229,13 @@ function appendData(data: number, dataLength: number, ecc: number, eccLength: nu
   }
 }
 
+/**
+ * Calculates the max length a QR code with the following properties can hold
+ * @param dataBlock - The dataBlock number of the QR code
+ * @param neccBlock1 - The neccBlock1 number of the QR code
+ * @param neccBlock2 - The neccBlock2 number of the QR code
+ * @returns The max length the QR code can hold.
+ */
 function calculateMaxLength(dataBlock: number, neccBlock1: number, neccBlock2: number): number {
   return (dataBlock * (neccBlock1 + neccBlock2)) + neccBlock2;
 }
@@ -286,7 +308,7 @@ export function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskTyp
       if (!(x % 3)) { // only does it every 3 lines (gap 2)
         for (let y = 0; y < width; y++) {
           if (isMasked(x, y, currentMask) ^ 1) {
-            buffer[x + (y * width)] ^= 1
+            buffer[x + (y * width)] ^= 1;
           }
         }
       }
@@ -390,6 +412,14 @@ export function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskTyp
   }
 }
 
+/**
+ * Creates a polynomial array.
+ * 
+ * @param eccBlock - The eccBlock to base the polynomial off of.
+ * Necessary to index the Galios arrays.
+ * 
+ * @returns A new polynomial array.
+ */
 export function calculatePolynomial(eccBlock: number): Uint8Array {
 
   const polynomial = new Uint8Array(eccBlock).fill(1);
@@ -413,7 +443,7 @@ export function calculatePolynomial(eccBlock: number): Uint8Array {
 
 function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number) {
 
-  let badness = new Uint8Array(width);
+  const badness = new Uint8Array(width);
 
   let b1, h;
   let bad = 0;
@@ -562,6 +592,14 @@ function convertBitStream(version: number, value: string, ecc: Uint8Array, dataB
   return ecc;
 }
 
+/**
+ * Apply one of the seven masks and perform other forms of cleanup on the QR code.
+ * 
+ @param level - The error correction level of the QR code.
+ @param buffer - The buffer containing the current state of the QR code.
+ @param width - The width of the QR code.
+ @param oldCurrentMask - The mask array of the QR code.
+ */
 function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
   // Save pre-mask copy of frame.
   const tempBuffer = new Uint8Array(buffer) as BinaryUint8Array;

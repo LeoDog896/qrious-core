@@ -1,5 +1,8 @@
 import { FrameOptions, UserFacingFrameOptions, defaultFrameOptions, generateFrame } from '../Frame';
 
+/**
+ * The options for the renderText function.
+ */
 interface TextRenderOptions extends FrameOptions {
   /** The activated characters (black on a regular QR code.) */
   readonly foregroundChar: string;
@@ -7,6 +10,14 @@ interface TextRenderOptions extends FrameOptions {
   readonly backgroundChar: string;
 }
 
+/**
+ * Render a QR code in text format.
+ * 
+ * @param options - The options you want the QR code to have.
+ * If you don't have any specific preferences, pass a regular string.
+ * 
+ * @returns The QR code in text format
+ */
 export const renderText = (options: Readonly<UserFacingFrameOptions<TextRenderOptions>> | string): string => {
   const processedOptions: Required<TextRenderOptions> = {
     ...defaultFrameOptions,
