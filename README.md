@@ -1,4 +1,5 @@
 # scannable
+[![npm](https://img.shields.io/npm/v/scannable)](https://npmjs.com/package/scannable)
 
 A simple scanning generation library.
 
