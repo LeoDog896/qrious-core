@@ -1,6 +1,6 @@
 {
   "name": "scannable",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A general purpose scannable creation library.",
   "homepage": "https://github.com/LeoDog896/scannable",
   "bugs": {
@@ -11,11 +11,13 @@
     "email": "leodog896@gmail.com",
     "url": "https://github.com/LeoDog896"
   },
-  "contributors": [{
-    "name": "Alasdair Mercer",
-    "email": "mercer.alasdair@gmail.com",
-    "url": "https://neocotic.com"
-  }],
+  "contributors": [
+    {
+      "name": "Alasdair Mercer",
+      "email": "mercer.alasdair@gmail.com",
+      "url": "https://neocotic.com"
+    }
+  ],
   "license": "GPL-3.0",
   "keywords": [
     "qr",
