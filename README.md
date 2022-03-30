@@ -3,7 +3,7 @@
 
 A simple scanning generation library.
 
-Check out the demo: https://leodog896.github.io/scannable
+Website: https://leodog896.github.io/scannable
 
 ## Install
 ```bash
