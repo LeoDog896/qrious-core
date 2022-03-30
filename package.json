@@ -42,7 +42,7 @@
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "prepublish": "npm run build && npm run size && eslint"
+    "prepublishOnly": "npm run build && npm run size && eslint"
   },
   "husky": {
     "hooks": {
