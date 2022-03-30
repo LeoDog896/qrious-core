@@ -42,7 +42,8 @@
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "prepublishOnly": "npm run build && npm run size && eslint"
+    "noCJS": "rm dist/*.cjs.*",
+    "prepublishOnly": "npm run build && npm run noCJS && npm run size && eslint"
   },
   "husky": {
     "hooks": {
