@@ -1,9 +1,10 @@
 <script>
-  import { renderText } from '../../../src/qr';
+  import { renderText, generateFrame } from '../../../src/qr';
 
-  globalThis["renderText"] = renderText
+  globalThis.renderText = renderText
+  globalThis.generateFrame = generateFrame
 
-  console.log("Welcome to scannable! The renderText function is now available as a global variable. Feel free to play around with it!")
+  console.log("Welcome to scannable! The renderText and generateFrame functions are now available as a global variable. Feel free to play around with it!")
 
 	import '../app.css';
 </script>

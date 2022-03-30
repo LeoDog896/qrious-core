@@ -806,6 +806,11 @@ function insertFinder(mask: BinaryUint8Array, buffer: BinaryUint8Array, width: n
   }
 }
 
+/**
+ * Insert the timing gap into the mask to ensure it isn't overriden.
+ * @param width - The width of the QR code
+ * @param mask - The mask to insert the gap into
+ */
 function insertTimingGap(width: number, mask: BinaryUint8Array) {
   for (let y = 0; y < 7; y++) {
     setMask(7, y, mask);
@@ -820,6 +825,12 @@ function insertTimingGap(width: number, mask: BinaryUint8Array) {
   }
 }
 
+/**
+ * Inserts the timing rows and columns into the QR code.
+ * @param buffer - The buffer to insert the QR code timings into
+ * @param mask - The mask to insert the timings into
+ * @param width - The width of the QR code
+ */
 function insertTimingRowAndColumn(buffer: BinaryUint8Array, mask: BinaryUint8Array, width: number) {
   for (let x = 0; x < width - 14; x++) {
     if (x & 1) {
@@ -937,16 +948,19 @@ export interface FrameResults {
  *
  * @param options - the options to be used
  */
-export function generateFrame(options: UserFacingFrameOptions): FrameResults {
-  const processedOptions: Required<FrameOptions> = { ...defaultFrameOptions, ...options };
+export function generateFrame(options: UserFacingFrameOptions | string): FrameResults {
+  const processedOptions: Required<FrameOptions> = { 
+    ...defaultFrameOptions,
+    ...(typeof options === "string" ? { value: options } : options)
+   };
 
   const level = ErrorCorrection.LEVELS[processedOptions.level];
-  const value = options.value;
+  const value = processedOptions.value;
 
   const { 
     version, neccBlock1, neccBlock2,
     dataBlock, eccBlock 
-  } = generateVersionsAndBlocks(options.value.length, level);
+  } = generateVersionsAndBlocks(processedOptions.value.length, level);
 
   // FIXME: Ensure that it fits instead of being truncated.
   const width = 17 + (4 * version);

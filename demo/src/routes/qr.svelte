@@ -62,7 +62,7 @@
     <div class="h-full flex-grow p-8">
       <textarea tabindex=0
         placeholder="Type URL here (EX: https://example.com)"
-        class="flex-grow w-full text-center" bind:value={value}
+        class="flex-grow w-full text-center mb-8" bind:value={value}
       />
       <RenderSystemDisplay {selectedRenderSystem} {value} />
     </div>
@@ -75,7 +75,7 @@
       {/each}
     </div>
   </div>
-  <div class="flex-row w-1/5 place-content-between">
+  <div class="flex-row w-1/5 place-content-between hidden sm:block">
     {#if selectedRenderSystem.options}
       <div class="m-4 flex flex-wrap flex-col">
         {#each Object.values(selectedRenderSystem.options) as option}
