@@ -41,10 +41,17 @@ export type BinaryUint8Array = Uint8Array & {
   [key: number]: 0 | 1
 };
 
+type ReadOnlyUint8ArrayLike<T extends Uint8Array, N = number> = Omit<T, 'copyWithin' | 'fill' | 'reverse' | 'set' | 'sort'> & { readonly [key: number]: N };
+
 /**
  * A type of {@link BinaryUint8Array} that is read only.
  */
-export type ReadOnlyBinaryUint8Array = Omit<BinaryUint8Array, 'copyWithin' | 'fill' | 'reverse' | 'set' | 'sort'> & { readonly [key: number]: 0 | 1 };
+export type ReadOnlyBinaryUint8Array = ReadOnlyUint8ArrayLike<BinaryUint8Array, 0 | 1>
+
+/**
+ * A type of {@link Uint8Array} that is read only.
+ */
+ export type ReadOnlyUint8Array = ReadOnlyUint8ArrayLike<Uint8Array>
 
 export const defaultFrameOptions: RenderOptionsDefaults<FrameOptions> = Object.freeze({ level: 'L' });
 
@@ -77,7 +84,7 @@ function getMaskBit(x: number, y: number): number {
   return bit;
 }
 
-function getBadness(length: number, badness: Uint8Array) {
+function getBadness(length: number, badness: ReadOnlyUint8Array): number {
   let badRuns = 0;
 
   for (let i = 0; i <= length; i++) {
@@ -186,6 +193,14 @@ function generateVersionsAndBlocks(length: number, level: number): {
   throw Error("Unreachable!");
 }
 
+/**
+ * Add an alignment to a position in a QR code. An alignment is the squares inside the QR code if the QR code version requires it.
+ * @param x - The x position of the alignmnet
+ * @param y - The y position of the alignment
+ * @param buffer - The buffer to add the alignment to
+ * @param mask - The mask to make sure the alignment isn't overriden
+ * @param width - The width of the QR code.
+ */
 function addAlignment(x: number, y: number, buffer: BinaryUint8Array, mask: BinaryUint8Array, width: number) {
   buffer[x + (width * y)] = 1;
 
