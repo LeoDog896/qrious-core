@@ -41,6 +41,9 @@ export type BinaryUint8Array = Uint8Array & {
   [key: number]: 0 | 1
 };
 
+/**
+ * Any type of a readonly {@link Uint8Array}
+ */
 type ReadOnlyUint8ArrayLike<T extends Uint8Array, N = number> = Omit<T, 'copyWithin' | 'fill' | 'reverse' | 'set' | 'sort'> & { readonly [key: number]: N };
 
 /**
@@ -51,7 +54,7 @@ export type ReadOnlyBinaryUint8Array = ReadOnlyUint8ArrayLike<BinaryUint8Array, 
 /**
  * A type of {@link Uint8Array} that is read only.
  */
- export type ReadOnlyUint8Array = ReadOnlyUint8ArrayLike<Uint8Array>
+export type ReadOnlyUint8Array = ReadOnlyUint8ArrayLike<Uint8Array, number>
 
 export const defaultFrameOptions: RenderOptionsDefaults<FrameOptions> = Object.freeze({ level: 'L' });
 
@@ -84,7 +87,7 @@ function getMaskBit(x: number, y: number): number {
   return bit;
 }
 
-function getBadness(length: number, badness: ReadOnlyUint8Array): number {
+function getBadness(length: number, badness: ReadOnlyUint8Array) {
   let badRuns = 0;
 
   for (let i = 0; i <= length; i++) {
@@ -193,14 +196,6 @@ function generateVersionsAndBlocks(length: number, level: number): {
   throw Error("Unreachable!");
 }
 
-/**
- * Add an alignment to a position in a QR code. An alignment is the squares inside the QR code if the QR code version requires it.
- * @param x - The x position of the alignmnet
- * @param y - The y position of the alignment
- * @param buffer - The buffer to add the alignment to
- * @param mask - The mask to make sure the alignment isn't overriden
- * @param width - The width of the QR code.
- */
 function addAlignment(x: number, y: number, buffer: BinaryUint8Array, mask: BinaryUint8Array, width: number) {
   buffer[x + (width * y)] = 1;
 
@@ -456,7 +451,13 @@ export function calculatePolynomial(eccBlock: number): Uint8Array {
   return polynomial;
 }
 
-function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number) {
+/**
+ * Check how bad a QR code is for reading
+ * @param buffer - The QR code buffer
+ * @param width - The width of the QR code
+ * @returns How bad the QR is for readability
+ */
+function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number): number {
 
   const badness = new Uint8Array(width);
 
@@ -618,9 +619,9 @@ function convertBitStream(version: number, value: string, ecc: Uint8Array, dataB
 function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
   // Save pre-mask copy of frame.
   const tempBuffer = new Uint8Array(buffer) as BinaryUint8Array;
-  let currentMask, i;
+  let i: number;
   let bit = 0;
-  let mask = 30000;
+  let bestMaskBadness = 30000;
 
   /*
     * Using for instead of while since in original Arduino code if an early mask was "good enough" it wouldn't try for
@@ -634,11 +635,11 @@ function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurre
     // Returns foreground-background imbalance.
     applyMask(width, buffer, i, oldCurrentMask);
 
-    currentMask = checkBadness(buffer, width);
+    const currentMaskBadness = checkBadness(buffer, width);
 
     // Is current mask better than previous best?
-    if (currentMask < mask) {
-      mask = currentMask;
+    if (currentMaskBadness < bestMaskBadness) {
+      bestMaskBadness = currentMaskBadness;
       bit = i;
     }
 
@@ -657,11 +658,11 @@ function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurre
   }
 
   // Add in final mask/ECC level bytes.
-  mask = ErrorCorrection.FINAL_FORMAT[bit + (level - 1 << 3)];
+  bestMaskBadness = ErrorCorrection.FINAL_FORMAT[bit + (level - 1 << 3)];
 
   // Low byte.
-  for (i = 0; i < 8; i++, mask >>= 1) {
-    if (mask & 1) {
+  for (i = 0; i < 8; i++, bestMaskBadness >>= 1) {
+    if (bestMaskBadness & 1) {
       buffer[width - 1 - i + (width * 8)] = 1;
 
       if (i < 6) {
@@ -673,8 +674,8 @@ function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurre
   }
 
   // High byte.
-  for (i = 0; i < 7; i++, mask >>= 1) {
-    if (mask & 1) {
+  for (i = 0; i < 7; i++, bestMaskBadness >>= 1) {
+    if (bestMaskBadness & 1) {
       buffer[8 + (width * (width - 7 + i))] = 1;
 
       if (i) {
@@ -806,11 +807,6 @@ function insertFinder(mask: BinaryUint8Array, buffer: BinaryUint8Array, width: n
   }
 }
 
-/**
- * Insert the timing gap into the mask to ensure it isn't overriden.
- * @param width - The width of the QR code
- * @param mask - The mask to insert the gap into
- */
 function insertTimingGap(width: number, mask: BinaryUint8Array) {
   for (let y = 0; y < 7; y++) {
     setMask(7, y, mask);
@@ -825,12 +821,6 @@ function insertTimingGap(width: number, mask: BinaryUint8Array) {
   }
 }
 
-/**
- * Inserts the timing rows and columns into the QR code.
- * @param buffer - The buffer to insert the QR code timings into
- * @param mask - The mask to insert the timings into
- * @param width - The width of the QR code
- */
 function insertTimingRowAndColumn(buffer: BinaryUint8Array, mask: BinaryUint8Array, width: number) {
   for (let x = 0; x < width - 14; x++) {
     if (x & 1) {
@@ -948,19 +938,16 @@ export interface FrameResults {
  *
  * @param options - the options to be used
  */
-export function generateFrame(options: UserFacingFrameOptions | string): FrameResults {
-  const processedOptions: Required<FrameOptions> = { 
-    ...defaultFrameOptions,
-    ...(typeof options === "string" ? { value: options } : options)
-   };
+export function generateFrame(options: UserFacingFrameOptions): FrameResults {
+  const processedOptions: Required<FrameOptions> = { ...defaultFrameOptions, ...options };
 
   const level = ErrorCorrection.LEVELS[processedOptions.level];
-  const value = processedOptions.value;
+  const value = options.value;
 
   const { 
     version, neccBlock1, neccBlock2,
     dataBlock, eccBlock 
-  } = generateVersionsAndBlocks(processedOptions.value.length, level);
+  } = generateVersionsAndBlocks(options.value.length, level);
 
   // FIXME: Ensure that it fits instead of being truncated.
   const width = 17 + (4 * version);
