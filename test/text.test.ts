@@ -55,6 +55,37 @@ const twoTone = `█▀▀▀▀▀█ ▀▀▀█▄▄▀ ▄ ▀▄  █▀�
 //   await fs.appendFile(`./test/resources.txt`, `${randomStr}:${code}\t`) // seperator is &&\n
 // }
 
+const google = `####### # #  # #  #######
+#     # #  #   #  #     #
+# ### # # #     # # ### #
+# ### #  #  # ##  # ### #
+# ### #    ###  # # ### #
+#     # ####  ##  #     #
+####### # # # # # #######
+             #           
+##  #######  ##  # #  ###
+ # ##    # #   ## ## ### 
+ #### ####     #####  # #
+  #  # # ## ## # ## ## # 
+###   ##    ####    #### 
+## ##    # #  #  # #  #  
+  ##  ####    ####    ###
+### ##      #  # ##  ####
+# ### ##     ## #######  
+        ### ### #   #   #
+####### # #   # # # #####
+#     # # #   # #   ##  #
+# ### # ####### #####   #
+# ### #     ##  ###### # 
+# ### #  # ### ###### ###
+#     # # ### ## ###   ##
+####### #  #   ##    # # `;
+
+// Weird version edge case
+test("Ensure https://google.com works", () => {
+  expect(renderText("https://google.com")).toBe(google);
+});
+
 test('Ensure base example.com example is valid', () => {
   expect(renderText({ value: 'https://example.com' })).toBe(exampleCom);
 });

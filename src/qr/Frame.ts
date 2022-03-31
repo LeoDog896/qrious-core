@@ -87,6 +87,12 @@ function getMaskBit(x: number, y: number): number {
   return bit;
 }
 
+/**
+ * Gets the badness of a QR code.
+ * @param length - The length of the data in the QR code
+ * @param badness - The QR code to check against
+ * @returns How bad the QR code is. 0 is the lowest.
+ */
 function getBadness(length: number, badness: ReadOnlyUint8Array) {
   let badRuns = 0;
 
@@ -113,10 +119,22 @@ function getBadness(length: number, badness: ReadOnlyUint8Array) {
   return badRuns;
 }
 
+/**
+ * Sets the mask to 1 at a specific postion in the buffer
+ * @param x - The x position to set
+ * @param y - The y position to set
+ * @param mask - The mask to set
+ */
 function setMask(x: number, y: number, mask: BinaryUint8Array) {
   mask[getMaskBit(x, y)] = 1;
 }
 
+/**
+ * Sets the mask to 1 at a specific index in the buffer
+ * @param i - The index in the buffer
+ * @param width - The QR code (buffer) width
+ * @param mask - The mask to set
+ */
 function setMaskIndex(i: number, width: number, mask: BinaryUint8Array) {
   mask[getMaskBit(i % width, ~~(i / width))] = 1;
 }
@@ -461,10 +479,9 @@ function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number): number {
 
   const badness = new Uint8Array(width);
 
-  let b1, h;
   let bad = 0;
 
-  // Blocks of same colour.
+  // Blocks of same colour. (2x2)
   for (let y = 0; y < width - 1; y++) {
     for (let x = 0; x < width - 1; x++) {
       // All foreground colour.
@@ -482,11 +499,12 @@ function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number): number {
     }
   }
 
+  let b1;
   let bw = 0;
 
   // X runs.
   for (let y = 0; y < width; y++) {
-    h = 0;
+    let h = 0;
 
     badness[0] = 0;
 
@@ -524,7 +542,7 @@ function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number): number {
 
   // Y runs.
   for (let x = 0; x < width; x++) {
-    h = 0;
+    let h = 0;
 
     badness[0] = 0;
 
@@ -546,6 +564,16 @@ function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number): number {
   return bad;
 }
 
+/**
+ * 
+ * @param version - The QR code version
+ * @param value - The text to be encoded into the QR code
+ * @param ecc - The current ECC block
+ * @param dataBlock - The data block (for versions)
+ * @param neccBlock1 - The first necc block (for versions)
+ * @param neccBlock2 - The second necc block (for versions)
+ * @returns A new ecc block
+ */
 function convertBitStream(version: number, value: string, ecc: Uint8Array, dataBlock: number, neccBlock1: number, neccBlock2: number): Uint8Array {
   let bit;
   let length = value.length;
@@ -717,6 +745,14 @@ function interleaveBlocks(ecc: Uint8Array, eccBlock: number, dataBlock: number, 
   return ecc;
 }
 
+/**
+ * Inserts all alignments to the QR code
+ * 
+ * @param version - The version of the QR code
+ * @param width - The width of the QR code
+ * @param buffer - The buffer containing the QR code
+ * @param mask - The mask on the QR code
+ */
 function insertAlignments(version: number, width: number, buffer: BinaryUint8Array, mask: BinaryUint8Array) {
   if (version > 1) {
     const i = Alignment.BLOCK[version];
@@ -807,6 +843,11 @@ function insertFinder(mask: BinaryUint8Array, buffer: BinaryUint8Array, width: n
   }
 }
 
+/**
+ * Inserts the timing gap into the mask to avoid overriding
+ * @param width - The width of the QR code
+ * @param mask - The mask to write to
+ */
 function insertTimingGap(width: number, mask: BinaryUint8Array) {
   for (let y = 0; y < 7; y++) {
     setMask(7, y, mask);
@@ -821,6 +862,12 @@ function insertTimingGap(width: number, mask: BinaryUint8Array) {
   }
 }
 
+/**
+ * Inserts the timing row and column into the QR code
+ * @param buffer - The buffer containing the QR code
+ * @param mask - The mask to write against
+ * @param width - The width of the QR code
+ */
 function insertTimingRowAndColumn(buffer: BinaryUint8Array, mask: BinaryUint8Array, width: number) {
   for (let x = 0; x < width - 14; x++) {
     if (x & 1) {
