@@ -178,11 +178,11 @@ function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number 
  * @param mask - The mask to check against
  * @returns If the mask at the index is masked (=== 1)
  */
-function isMaskedIndex(i: number, width: number, mask: ReadOnlyBinaryUint8Array): number {
-  const bit = getMaskBit(i % width, ~~(i / width));
+// function isMaskedIndex(i: number, width: number, mask: ReadOnlyBinaryUint8Array): number {
+//   const bit = getMaskBit(i % width, ~~(i / width));
 
-  return mask[bit] & 1;
-}
+//   return mask[bit] & 1;
+// }
 
 /**
  * Generates all versions and block values.
@@ -310,9 +310,11 @@ export function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskTyp
     * 01010101010
     * and so on 
     */ 
-    for (let i = 0; i < width * width; i++) {
-      if (!(i % 2) && isMaskedIndex(i, width, currentMask) ^ 1) {
-        buffer[i] ^= 1;
+    for (let y = 0; y < width; y++) {
+      for (let x = 0; x < width; x++) {
+        if (!((x + y) & 1) && !isMasked(x, y, currentMask)) {
+          buffer[x + (y * width)] ^= 1;
+        }
       }
     }
 
@@ -320,11 +322,9 @@ export function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskTyp
   case MaskType.ALTERNATING_HORIZONTAL_LINES:
     // Alternating straight lines. The first line is 1, the second is 0, and so forth
     for (let y = 0; y < width; y++) {
-      if (y % 2) { // every other line
-        for (let x = 0; x < width; x++) {
-          if (isMasked(x, y, currentMask) ^ 1) {
-            buffer[x + (y * width)] ^= 1;
-          }
+      for (let x = 0; x < width; x++) {
+        if (!(y & 1) && !isMasked(x, y, currentMask)) {
+          buffer[x + (y * width)] ^= 1;
         }
       }
     }
@@ -332,12 +332,14 @@ export function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskTyp
     break;
   case MaskType.ALTERNATING_VERTICAL_LINES_TWO_GAP:
     // Vertical straight lines, with the pattern: 1001001
-    for (let x = 0; x < width; x++) {
-      if (!(x % 3)) { // only does it every 3 lines (gap 2)
-        for (let y = 0; y < width; y++) {
-          if (isMasked(x, y, currentMask) ^ 1) {
-            buffer[x + (y * width)] ^= 1;
-          }
+    for (let y = 0; y < width; y++) {
+      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
+        if (r3x === 3) {
+          r3x = 0;
+        }
+
+        if (!r3x && !isMasked(x, y, currentMask)) {
+          buffer[x + (y * width)] ^= 1;
         }
       }
     }
