@@ -57,12 +57,12 @@
   let value = ""
 
 </script>
-<div class="flex flex-col w-screen h-screen">
+<div class="flex flex-row w-screen h-screen">
   <div class="flex flex-row flex-grow w-full">
     <div class="h-full flex-grow p-8">
       <textarea tabindex=0
         placeholder="Type URL here (EX: https://example.com)"
-        class="flex-grow w-full text-center" bind:value={value}
+        class="flex-grow w-full text-center mb-8" bind:value={value}
       />
       <RenderSystemDisplay {selectedRenderSystem} {value} />
     </div>
@@ -75,22 +75,24 @@
       {/each}
     </div>
   </div>
-  <div class="flex-row">
-    <div class="m-4 flex flex-row">
-      {#each Object.values(selectedRenderSystem.options) as option}
-        <div>
-          <label for={option.name}>{option.name}:</label>
-          {#if option.type == "text"}
-            <input id={option.name} class="transition-all border-b outline-none focus:border-sky-500 focus:border-b-2" bind:value={option.value} placeholder={option.name}/>
-          {:else if option.type == "color"}
-            <input type="color" bind:value={option.value}>
-          {:else if option.type == "number"}
-            <input type="number" bind:value={option.value}>
-          {:else if option.type == "boolean"}
-            <input type="checkbox" bind:checked={option.value}>
-          {/if}
-        </div>
-      {/each}
-    </div>
+  <div class="flex-row w-1/5 place-content-between hidden sm:block">
+    {#if selectedRenderSystem.options}
+      <div class="m-4 flex flex-wrap flex-col">
+        {#each Object.values(selectedRenderSystem.options) as option}
+          <div class="border-b mb-4 border-gray-400">
+            <label for={option.name}>{option.name}:</label>
+            {#if option.type == "text"}
+              <input id={option.name} class="transition-all border-b outline-none focus:border-sky-500 focus:border-b-2" bind:value={option.value} placeholder={option.name}/>
+            {:else if option.type == "color"}
+              <input type="color" bind:value={option.value}>
+            {:else if option.type == "number"}
+              <input type="number" bind:value={option.value}>
+            {:else if option.type == "boolean"}
+              <input type="checkbox" bind:checked={option.value}>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    {/if}
   </div>
 </div>

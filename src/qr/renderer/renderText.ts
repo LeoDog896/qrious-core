@@ -1,15 +1,36 @@
-import { FrameOptions, UserFacingFrameOptions, defaultFrameOptions, generateFrame } from '../Frame';
+import { FrameOptions, UserFacingFrameOptions, defaultFrameOptions, generateFrame, FrameResults } from '../Frame';
 
-/**
- * The options for the renderText function.
- */
-interface TextRenderOptions extends FrameOptions {
+interface IsolatedTextRenderOptions {
   /** The activated characters (black on a regular QR code.) */
   readonly foregroundChar: string;
   /** The non-activated characters (white on a regular QR code) */
   readonly backgroundChar: string;
 }
 
+export const renderTextFromFrame = (options: IsolatedTextRenderOptions, frame: FrameResults): string => {
+  let str = '';
+
+  for (let i = 0; i < frame.width; i++) {
+    for (let j = 0; j < frame.width; j++) {
+      if (frame.buffer[(j * frame.width) + i]) {
+        str += options.foregroundChar;
+      } else {
+        str += options.backgroundChar;
+      }
+    }
+    if (i !== frame.width - 1) {
+      str += '\n';
+    }
+  }
+
+  return str;
+};
+
+
+/**
+ * The options for the renderText function.
+ */
+type TextRenderOptions = FrameOptions & IsolatedTextRenderOptions;
 /**
  * Render a QR code in text format.
  * 
@@ -28,20 +49,5 @@ export const renderText = (options: Readonly<UserFacingFrameOptions<TextRenderOp
 
   const frame = generateFrame(processedOptions);
 
-  let str = '';
-
-  for (let i = 0; i < frame.width; i++) {
-    for (let j = 0; j < frame.width; j++) {
-      if (frame.buffer[(j * frame.width) + i]) {
-        str += processedOptions.foregroundChar;
-      } else {
-        str += processedOptions.backgroundChar;
-      }
-    }
-    if (i !== frame.width - 1) {
-      str += '\n';
-    }
-  }
-
-  return str;
+  return renderTextFromFrame(processedOptions, frame);
 };
