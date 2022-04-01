@@ -1,4 +1,4 @@
-import { renderText, renderTwoTone } from '../src/qr';
+import { renderText } from '../src/qr';
 import { createReadStream } from 'fs';
 import split from 'split';
 
@@ -27,22 +27,6 @@ const exampleCom = `####### ### ##### #######
 # ### #  # #  ####    ## 
 #     #  # # ## ## # ### 
 ####### # ### ##  # #####`;
-
-const twoTone = `█▀▀▀▀▀█ ▀▀▀█▄▄▀ ▄ ▀▄  █▀▀▀▀▀█
-█ ███ █  ▀▄█ █▀██▄▄▄█ █ ███ █
-█ ▀▀▀ █  ▄▀█▀ █ ▀ ▀▀▄ █ ▀▀▀ █
-▀▀▀▀▀▀▀ █▄▀ █▄▀ ▀ ▀ █ ▀▀▀▀▀▀▀
-█▀▄▀▀ ▀ ▄▀▄ ▀▀▀▄ ▀ █ ▄▀▄▄ ▄▄▀
-▄█▀ ▀█▀█▀▀  ▀ ▀█ ▄ ▄███▀ ▄▀ ▄
-▄▀▀▄ ▀▀▀▄██ ▄ ▄█▄ ▄ █ █▀▄▄▄▄█
-▀▀▀█▄▄▀█▀▄█ ▄▀▀█▀ ▀▀▀▄ █▄ █ █
-█ ▄▀▄▄▀█▄▀ █▀  ▀ ▄ ▄█▄  ▄▀▄▄ 
-██▄ ▀ ▀▄█▀▀▄▀█▄▀▄▀▄▀█▄▀▄▄█▄ ▀
-▀▀   ▀▀▀▄█▀▀▄  ▄▄▀▄▀█▀▀▀██▀▀ 
-█▀▀▀▀▀█  █▀█▄  █ ▄▀██ ▀ █▀ ▄ 
-█ ███ █ █▄▄▀▀█▄█▄▄▄▀██▀█▀▀ ▀▄
-█ ▀▀▀ █ ▄▄▄█▀▀▀█  █▄ ▄▄█▀▄█▀█
-▀▀▀▀▀▀▀ ▀▀  ▀ ▀ ▀ ▀▀▀▀  ▀▀   `;
 
 // import { promises as fs } from "fs"
 // import crypto from "crypto"
@@ -88,10 +72,6 @@ test("Ensure https://google.com works", () => {
 
 test('Ensure base example.com example is valid', () => {
   expect(renderText({ value: 'https://example.com' })).toBe(exampleCom);
-});
-
-test('Ensure twotone is valid', () => {
-  expect(renderTwoTone("https://www.youtube.com/watch?v=FvyimePmD4E")).toBe(twoTone);
 });
 
 test('Ensure all resources are valid', (done) => {

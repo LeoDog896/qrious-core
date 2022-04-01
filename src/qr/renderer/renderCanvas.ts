@@ -8,11 +8,14 @@ export const renderContext = (
   width?: number,
   height?: number
 ) => {
+  
+  const jsonOptions = typeof options === 'string' ? { value: options } : options;
+
   const processedOptions: ImageLikeRenderOptions = { 
     ...defaultImageLikeRenderOptions,
-    width: width ?? context.canvas.clientWidth,
-    height: height ?? context.canvas.clientHeight,
-    ...(typeof options === 'string' ? { value: options } : options),
+    width: width ?? (context.canvas.clientWidth - ((jsonOptions.x ?? 0) * 2)),
+    height: height ?? (context.canvas.clientHeight - ((jsonOptions.y ?? 0) * 2)),
+    ...jsonOptions,
   };
   
   const frame = generateFrame(processedOptions);
@@ -26,16 +29,16 @@ export const renderContext = (
         context.fillStyle = processedOptions.foregroundColor;
         context.globalAlpha = processedOptions.foregroundAlpha;
         context.fillRect(
-          (moduleSizeWidth * i),
-          (moduleSizeHeight * j),
+          (moduleSizeWidth * i) + processedOptions.x,
+          (moduleSizeHeight * j) + processedOptions.y,
           moduleSizeWidth, moduleSizeHeight
         );
       } else {
         context.fillStyle = processedOptions.backgroundColor;
         context.globalAlpha = processedOptions.backgroundAlpha;
         context.fillRect(
-          (moduleSizeWidth * i),
-          (moduleSizeHeight * j),
+          (moduleSizeWidth * i) + processedOptions.x,
+          (moduleSizeHeight * j) + processedOptions.y,
           moduleSizeWidth, moduleSizeHeight
         );
       }

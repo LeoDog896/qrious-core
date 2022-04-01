@@ -8,15 +8,22 @@
     name: "Simple Image",
     render: (value, canvas, options) => {
       clearCanvas(canvas)
+      canvas.getContext("2d").fillStyle = options.backgroundColor.value;
+      canvas.getContext("2d")?.fillRect(0, 0, canvas.width, canvas.height)
       renderCanvas({ 
         value, 
-        foregroundColor: options.foregroundColor.value as string,
-        backgroundColor: options.backgroundColor.value as string
+        foregroundColor: options.foregroundColor.value,
+        backgroundColor: options.backgroundColor.value,
+        x: options.padding.value,
+        y: options.padding.value,
+        width: 300 - (options.padding.value * 2),
+        height: 300 - (options.padding.value * 2)
       }, canvas)
     },
     options: {
       foregroundColor: { type: "color", name: "Foreground Color", value: "#000000", defaultValue: "#000000" },
-      backgroundColor: { type: "color", name: "Background Color", value: "#ffffff", defaultValue: "#ffffff" }
+      backgroundColor: { type: "color", name: "Background Color", value: "#ffffff", defaultValue: "#ffffff" },
+      padding: { type: "number", name: "Padding", defaultValue: 10, value: 10 }
     }
   }, {
     type: "text",
