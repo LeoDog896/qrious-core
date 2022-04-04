@@ -8,9 +8,10 @@
     
   $: size = 300 + ((selectedRenderSystem.options.padding?.value || 0) * 2)
 
-  $: if (size && selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas) {
+  $: if (size && selectedRenderSystem.type == "canvas") {
     tick().then(() => {
-      selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options)
+      if (selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas)
+        selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options)
     })
   }
 </script>
@@ -27,5 +28,9 @@
     }
   </h1>
 {:else if selectedRenderSystem.type == "canvas"}
-  <canvas class="m-auto" height={size} width={size} bind:this={selectedRenderSystem.currentCanvas} />
+  {#if selectedRenderSystem.name == "Simple Image"}
+    <canvas class="m-auto" height={size} width={size} bind:this={selectedRenderSystem.currentCanvas} />
+  {:else}
+    <canvas class="m-auto" height={size} width={size} bind:this={selectedRenderSystem.currentCanvas} />
+  {/if}
 {/if}
