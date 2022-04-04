@@ -26,6 +26,20 @@
       padding: { type: "number", name: "Padding", defaultValue: 10, value: 10 }
     }
   }, {
+    type: "canvas",
+    name: "Transparent QR Code",
+    render: (value, canvas, options) => {
+      clearCanvas(canvas);
+      renderCanvas({
+        value,
+        foregroundColor: options.foregroundColor.value,
+        backgroundAlpha: 0
+      }, canvas);
+    },
+    options: {
+      foregroundColor: { type: "color", name: "Foreground Color", value: "#000000", defaultValue: "#000000"}
+    }
+  }, {
     type: "text",
     name: "Unicode",
     render: renderTwoTone,
