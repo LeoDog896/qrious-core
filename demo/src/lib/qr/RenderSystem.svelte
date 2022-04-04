@@ -1,13 +1,18 @@
 <script lang="ts">
+  import { tick } from "svelte";
+
   import type { RenderSystem } from "./rendererTypes"
 
   export let value: string
   export let selectedRenderSystem: RenderSystem<any>
+    
+  $: size = 300 + ((selectedRenderSystem.options.padding?.value || 0) * 2)
 
-  let size = 300 + selectedRenderSystem.options.padding.value
-
-  $: if (selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas) 
-    selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options)
+  $: if (size && selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas) {
+    tick().then(() => {
+      selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options)
+    })
+  }
 </script>
 
 {#if selectedRenderSystem.type == "text"}

@@ -14,20 +14,20 @@
         value, 
         foregroundColor: options.foregroundColor.value,
         backgroundColor: options.backgroundColor.value,
-        x: options.padding.value,
-        y: options.padding.value,
-        width: 300 - (options.padding.value * 2),
-        height: 300 - (options.padding.value * 2)
+        x: options.padding.value || options.padding.defaultValue,
+        y: options.padding.value || options.padding.defaultValue,
+        width: 300,
+        height: 300
       }, canvas)
     },
     options: {
       foregroundColor: { type: "color", name: "Foreground Color", value: "#000000", defaultValue: "#000000" },
       backgroundColor: { type: "color", name: "Background Color", value: "#ffffff", defaultValue: "#ffffff" },
-      padding: { type: "number", name: "Padding", defaultValue: 10, value: 10 }
+      padding: { type: "number", min: 0, name: "Padding", defaultValue: 0, value: 50 }
     }
   }, {
     type: "canvas",
-    name: "Transparent QR Code",
+    name: "Transparent Image",
     render: (value, canvas, options) => {
       clearCanvas(canvas);
       renderCanvas({
@@ -107,7 +107,7 @@
             {:else if option.type == "color"}
               <input type="color" bind:value={option.value}>
             {:else if option.type == "number"}
-              <input type="number" bind:value={option.value}>
+              <input type="number" min={option.min ? option.min : 0} bind:value={option.value}>
             {:else if option.type == "boolean"}
               <input type="checkbox" bind:checked={option.value}>
             {/if}

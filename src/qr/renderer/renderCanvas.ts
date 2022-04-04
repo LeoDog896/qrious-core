@@ -2,6 +2,14 @@ import { UserFacingFrameOptions, generateFrame } from '../Frame';
 import { defaultImageLikeRenderOptions, ImageLikeRenderOptions } from './options/image';
 import { getModuleSize } from './utils';
 
+/**
+ * Renders a QR code onto a canvascontext
+ * 
+ * @param options - the options to use for the frame.
+ * @param context - The canvas context to use
+ * @param width - The width of the QR code, **not the canvas**
+ * @param height - The height of the QR code, **not the canvas**
+ */
 export const renderContext = (
   options: UserFacingFrameOptions<ImageLikeRenderOptions> | string,
   context: CanvasRenderingContext2D,
