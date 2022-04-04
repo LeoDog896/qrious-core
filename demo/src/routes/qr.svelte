@@ -14,8 +14,8 @@
         value, 
         foregroundColor: options.foregroundColor.value,
         backgroundColor: options.backgroundColor.value,
-        x: options.padding.value || options.padding.defaultValue,
-        y: options.padding.value || options.padding.defaultValue,
+        x: options.padding.value || 0,
+        y: options.padding.value || 0,
         width: 300,
         height: 300
       }, canvas)
