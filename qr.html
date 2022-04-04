@@ -8,32 +8,32 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta http-equiv="content-security-policy" content="">
 	<link rel="stylesheet" href="/scannable/_app/assets/pages/__layout.svelte-81726d92.css">
-	<link rel="modulepreload" href="/scannable/_app/start-8b2245a0.js">
+	<link rel="modulepreload" href="/scannable/_app/start-949cab60.js">
 	<link rel="modulepreload" href="/scannable/_app/chunks/index-3ad129c8.js">
 	<link rel="modulepreload" href="/scannable/_app/pages/__layout.svelte-57160d92.js">
 	<link rel="modulepreload" href="/scannable/_app/chunks/image-a2419ccc.js">
-	<link rel="modulepreload" href="/scannable/_app/pages/qr.svelte-514f6cc6.js">
+	<link rel="modulepreload" href="/scannable/_app/pages/qr.svelte-19242c08.js">
 	</head>
 	<body class="w-screen h-screen">
 		<div class="w-full h-full">
 
 
 <div class="flex flex-row w-screen h-screen"><div class="flex flex-row flex-grow w-full"><div class="h-full flex-grow p-8"><textarea tabindex="0" placeholder="Type URL here (EX: https://example.com)" class="flex-grow w-full text-center mb-8"></textarea>
-      <canvas class="m-auto" height="310" width="310"></canvas></div>
-    <div class="flex-shrink flex flex-col w-32 h-full bg-gray-100"><div tabindex="0" class="w-full bg-gray-200 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4">Simple Image</div><div tabindex="0" class="w-full bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4">Transparent QR Code</div><div tabindex="0" class="w-full bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4">Unicode</div><div tabindex="0" class="w-full bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4">ASCII</div></div></div>
+      <canvas class="m-auto" height="400" width="400"></canvas></div>
+    <div class="flex-shrink flex flex-col w-32 h-full bg-gray-100"><div tabindex="0" class="w-full bg-gray-200 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4">Simple Image</div><div tabindex="0" class="w-full bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4">Transparent Image</div><div tabindex="0" class="w-full bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4">Unicode</div><div tabindex="0" class="w-full bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4">ASCII</div></div></div>
   <div class="flex-row w-1/5 place-content-between hidden sm:block"><div class="m-4 flex flex-wrap flex-col"><div class="border-b mb-4 border-gray-400"><label for="Foreground Color">Foreground Color:</label>
             <input type="color" value="#000000">
           </div><div class="border-b mb-4 border-gray-400"><label for="Background Color">Background Color:</label>
             <input type="color" value="#ffffff">
           </div><div class="border-b mb-4 border-gray-400"><label for="Padding">Padding:</label>
-            <input type="number" value="10">
+            <input type="number" min="0" value="50">
           </div></div></div></div>
 
 
-		<script type="module" data-hydrate="3qabnn">
-		import { start } from "/scannable/_app/start-8b2245a0.js";
+		<script type="module" data-hydrate="u2t07d">
+		import { start } from "/scannable/_app/start-949cab60.js";
 		start({
-			target: document.querySelector('[data-hydrate="3qabnn"]').parentNode,
+			target: document.querySelector('[data-hydrate="u2t07d"]').parentNode,
 			paths: {"base":"/scannable","assets":"/scannable"},
 			session: {},
 			route: true,
@@ -44,7 +44,7 @@
 				error: null,
 				nodes: [
 					import("/scannable/_app/pages/__layout.svelte-57160d92.js"),
-						import("/scannable/_app/pages/qr.svelte-514f6cc6.js")
+						import("/scannable/_app/pages/qr.svelte-19242c08.js")
 				],
 				params: {},
 				routeId: "qr"
