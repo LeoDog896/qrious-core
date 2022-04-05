@@ -1,4 +1,5 @@
-(upstream license from QRious)
+Scannable
+Copyright (C) 2022 TristanF.
 
 QRious  
 Copyright (C) 2017 Alasdair Mercer  
