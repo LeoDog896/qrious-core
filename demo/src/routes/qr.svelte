@@ -82,7 +82,7 @@
   <div class="flex flex-row flex-grow w-full">
     <div class="h-full flex-grow p-8">
       <textarea tabindex=0
-        placeholder="Type URL here (EX: https://example.com)"
+        placeholder="Type URL here (EX: https://example.com). The current QR code is empty."
         class="flex-grow w-full text-center mb-8 print:hidden" bind:value={value}
       />
       <RenderSystemDisplay {selectedRenderSystem} {value} />

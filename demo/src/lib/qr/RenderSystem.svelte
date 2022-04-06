@@ -14,9 +14,23 @@
         selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options)
     })
   }
+  
+  $: if (selectedRenderSystem.type == "text") console.log(selectedRenderSystem.render(value, selectedRenderSystem.options).split("\n").length)
 </script>
 
-{#if selectedRenderSystem.type == "text"}
+{#if selectedRenderSystem.name == "ASCII" && selectedRenderSystem.type == "text"}
+  <h1 class="font-mono text-center my-10" style="
+    line-height: 10px;
+    letter-spacing: 0;
+    font-size: 12px;
+    ">
+      {@html selectedRenderSystem
+        .render(value, selectedRenderSystem.options)
+        .replaceAll("\n", "<br/>")
+        .replaceAll(" ", "&nbsp;")
+      }
+  </h1>
+{:else if selectedRenderSystem.type == "text"}
   <h1 class="font-mono text-center my-10" style="
   line-height: {selectedRenderSystem.lineSpacing};
   letter-spacing: {selectedRenderSystem.tracking}
