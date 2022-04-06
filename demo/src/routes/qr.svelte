@@ -83,11 +83,11 @@
     <div class="h-full flex-grow p-8">
       <textarea tabindex=0
         placeholder="Type URL here (EX: https://example.com)"
-        class="flex-grow w-full text-center mb-8" bind:value={value}
+        class="flex-grow w-full text-center mb-8 print:hidden" bind:value={value}
       />
       <RenderSystemDisplay {selectedRenderSystem} {value} />
     </div>
-    <div class="flex-shrink flex flex-col w-32 h-full bg-gray-100">
+    <div class="flex-shrink flex flex-col w-32 h-full bg-gray-100 print:hidden">
       {#each renderSystems as renderSystem}
         <div tabindex=0 class="
           w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300
@@ -96,7 +96,7 @@
       {/each}
     </div>
   </div>
-  <div class="flex-row w-1/5 place-content-between hidden sm:block">
+  <div class="flex-row w-1/5 place-content-between hidden sm:block print:hidden">
     {#if selectedRenderSystem.options}
       <div class="m-4 flex flex-wrap flex-col">
         {#each Object.values(selectedRenderSystem.options) as option}
