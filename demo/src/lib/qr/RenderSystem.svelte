@@ -5,18 +5,24 @@
 
   export let value: string
   export let selectedRenderSystem: RenderSystem<any>
-    
-  $: size = 300 + ((selectedRenderSystem.options.padding?.value || 0) * 2)
+  
+  let w: number
+
+  const baseSize = 100
+  $: chosenSize = baseSize + w / 4
+  $: size = chosenSize + ((selectedRenderSystem.options.padding?.value || 0) * 2)
 
   $: if (size && selectedRenderSystem.type == "canvas") {
     tick().then(() => {
       if (selectedRenderSystem.type == "canvas" && selectedRenderSystem.currentCanvas)
-        selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options)
+        selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options, chosenSize)
     })
   }
   
   $: if (selectedRenderSystem.type == "text") console.log(selectedRenderSystem.render(value, selectedRenderSystem.options).split("\n").length)
 </script>
+
+<svelte:window bind:innerWidth={w}></svelte:window>
 
 {#if selectedRenderSystem.name == "ASCII" && selectedRenderSystem.type == "text"}
   <h1 class="font-mono text-center my-10" style="

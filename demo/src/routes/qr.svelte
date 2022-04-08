@@ -6,7 +6,7 @@
   const renderSystems = createRenderSystems([{
     type: "canvas",
     name: "Simple Image",
-    render: (value, canvas, options) => {
+    render: (value, canvas, options, size) => {
       clearCanvas(canvas)
       canvas.getContext("2d").fillStyle = options.backgroundColor.value;
       canvas.getContext("2d")?.fillRect(0, 0, canvas.width, canvas.height)
@@ -16,8 +16,8 @@
         backgroundColor: options.backgroundColor.value,
         x: options.padding.value || 0,
         y: options.padding.value || 0,
-        width: 300,
-        height: 300
+        width: size,
+        height: size
       }, canvas)
     },
     options: {
@@ -79,7 +79,7 @@
 
 </script>
 <div class="flex flex-row w-screen h-screen">
-  <div class="flex flex-row flex-grow w-full">
+  <div class="flex sm:flex-row flex-col flex-grow w-full">
     <div class="h-full flex-grow p-8">
       <textarea tabindex=0
         placeholder="Type URL here (EX: https://example.com). The current QR code is empty."
@@ -87,7 +87,7 @@
       />
       <RenderSystemDisplay {selectedRenderSystem} {value} />
     </div>
-    <div class="flex-shrink flex flex-col w-32 h-full bg-gray-100 print:hidden">
+    <div class="flex-shrink flex sm:flex-col flex-row sm:w-32 w-full sm:h-full bg-gray-100 print:hidden">
       {#each renderSystems as renderSystem}
         <div tabindex=0 class="
           w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300

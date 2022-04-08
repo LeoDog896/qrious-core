@@ -30,7 +30,7 @@ export type RenderSystem<OptionsType extends ReturnCreateOptionsAdvanced<Options
   options: OptionsType
 } & ({ //Canvas
   type: 'canvas';
-  render: (value: string, canvas: HTMLCanvasElement, options: OptionsType) => void
+  render: (value: string, canvas: HTMLCanvasElement, options: OptionsType, size: number) => void
   currentCanvas?: HTMLCanvasElement
 } | { // Text
   type: "text";
