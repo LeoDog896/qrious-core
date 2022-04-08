@@ -90,9 +90,16 @@
     <div class="flex-shrink flex sm:flex-col flex-row sm:w-32 w-full sm:h-full bg-gray-100 print:hidden">
       {#each renderSystems as renderSystem}
         <div tabindex=0 class="
-          w-full {selectedRenderSystem == renderSystem ? "bg-gray-200" : "bg-gray-100"} hover:bg-gray-300
-          hover:cursor-pointer transition-colors p-4
-        " on:click={() => {selectedRenderSystem = renderSystem}}>{renderSystem.name}</div>
+          w-full text-center {selectedRenderSystem == renderSystem ? "bg-gray-200 font-bold" : "bg-gray-100"} hover:bg-gray-300
+          hover:cursor-pointer transition-colors p-4 text-lg
+        "
+        on:click={() => {selectedRenderSystem = renderSystem}}
+        on:keydown={(e) => {
+          if (e.key == "Enter") {
+            selectedRenderSystem = renderSystem
+          }
+        }}
+        >{renderSystem.name}</div>
       {/each}
     </div>
   </div>
@@ -103,11 +110,11 @@
           <div class="border-b mb-4 border-gray-400">
             <label for={option.name}>{option.name}:</label>
             {#if option.type == "text"}
-              <input id={option.name} class="transition-all border-b outline-none focus:border-sky-500 focus:border-b-2" bind:value={option.value} placeholder={option.name}/>
+              <input id={option.name} class="transition-all border-b w-full" bind:value={option.value} placeholder={option.name}/>
             {:else if option.type == "color"}
               <input type="color" bind:value={option.value}>
             {:else if option.type == "number"}
-              <input type="number" min={option.min ? option.min : 0} bind:value={option.value}>
+              <input type="number" class="w-full" min={option.min ? option.min : 0} bind:value={option.value}>
             {:else if option.type == "boolean"}
               <input type="checkbox" bind:checked={option.value}>
             {/if}
