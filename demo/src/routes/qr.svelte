@@ -107,7 +107,7 @@
     {#if selectedRenderSystem.options}
       <div class="m-4 flex flex-wrap flex-col">
         {#each Object.values(selectedRenderSystem.options) as option}
-          <div class="border-b mb-4 border-gray-400">
+          <div class="border-b mb-12 border-gray-400">
             <label for={option.name}>{option.name}:</label>
             {#if option.type == "text"}
               <input id={option.name} class="transition-all border-b w-full" bind:value={option.value} placeholder={option.name}/>
