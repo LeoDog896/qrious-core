@@ -7,12 +7,12 @@
 		<link rel="icon" href="/scannable/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta http-equiv="content-security-policy" content="">
-	<link rel="stylesheet" href="/scannable/_app/assets/pages/__layout.svelte-edfe5910.css">
-	<link rel="modulepreload" href="/scannable/_app/start-dc334db7.js">
+	<link rel="stylesheet" href="/scannable/_app/assets/pages/__layout.svelte-452f44fc.css">
+	<link rel="modulepreload" href="/scannable/_app/start-56d8f982.js">
 	<link rel="modulepreload" href="/scannable/_app/chunks/index-68896ec3.js">
-	<link rel="modulepreload" href="/scannable/_app/pages/__layout.svelte-719a0b35.js">
+	<link rel="modulepreload" href="/scannable/_app/pages/__layout.svelte-44587ce7.js">
 	<link rel="modulepreload" href="/scannable/_app/chunks/image-a2419ccc.js">
-	<link rel="modulepreload" href="/scannable/_app/pages/qr.svelte-886b4e2a.js">
+	<link rel="modulepreload" href="/scannable/_app/pages/qr.svelte-543e97a1.js">
 	</head>
 	<body class="w-screen h-screen">
 		<div class="w-full h-full">
@@ -22,20 +22,24 @@
       
 
 <canvas class="m-auto" height="NaN" width="NaN"></canvas></div>
-    <div class="flex-shrink flex sm:flex-col flex-row sm:w-32 w-full sm:h-full bg-gray-100 print:hidden"><div tabindex="0" class="w-full text-center bg-gray-200 font-bold hover:bg-gray-300 hover:cursor-pointer transition-colors p-4 text-lg">Simple Image</div><div tabindex="0" class="w-full text-center bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4 text-lg">Transparent Image</div><div tabindex="0" class="w-full text-center bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4 text-lg">Unicode</div><div tabindex="0" class="w-full text-center bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4 text-lg">ASCII</div></div></div>
-  <div class="flex-row w-1/5 place-content-between hidden sm:block print:hidden"><div class="m-4 flex flex-wrap flex-col"><div class="border-b mb-4 border-gray-400"><label for="Foreground Color">Foreground Color:</label>
+    <div class="flex-shrink flex sm:flex-col flex-row sm:w-32 w-full sm:h-full bg-gray-100 print:hidden"><div tabindex="0" class="w-full text-center bg-gray-200 font-bold hover:bg-gray-300 hover:cursor-pointer transition-colors p-4 text-lg">Simple Image</div><div tabindex="0" class="w-full text-center bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4 text-lg">Unicode</div><div tabindex="0" class="w-full text-center bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-4 text-lg">ASCII</div></div></div>
+  <div class="flex-row w-1/5 place-content-between hidden sm:block print:hidden"><div class="m-4 flex flex-wrap flex-col"><div class="border-b mb-12 border-gray-400"><label for="Foreground Color">Foreground Color:</label>
             <input type="color" value="#000000">
-          </div><div class="border-b mb-4 border-gray-400"><label for="Background Color">Background Color:</label>
+          </div><div class="border-b mb-12 border-gray-400"><label for="Background Color">Background Color:</label>
             <input type="color" value="#ffffff">
-          </div><div class="border-b mb-4 border-gray-400"><label for="Padding">Padding:</label>
-            <input type="number" class="w-full" min="0" value="50">
+          </div><div class="border-b mb-12 border-gray-400"><label for="Foreground Transparency">Foreground Transparency:</label>
+            <input type="number" class="w-full" min="0" max="1" step="0.1" value="1">
+          </div><div class="border-b mb-12 border-gray-400"><label for="Background Transparency">Background Transparency:</label>
+            <input type="number" class="w-full" min="0" max="1" step="0.1" value="1">
+          </div><div class="border-b mb-12 border-gray-400"><label for="Padding">Padding:</label>
+            <input type="number" class="w-full" min="0" max="10000000000" step="1" value="50">
           </div></div></div></div>
 
 
-		<script type="module" data-hydrate="540663">
-		import { start } from "/scannable/_app/start-dc334db7.js";
+		<script type="module" data-hydrate="1saruld">
+		import { start } from "/scannable/_app/start-56d8f982.js";
 		start({
-			target: document.querySelector('[data-hydrate="540663"]').parentNode,
+			target: document.querySelector('[data-hydrate="1saruld"]').parentNode,
 			paths: {"base":"/scannable","assets":"/scannable"},
 			session: {},
 			route: true,
@@ -45,8 +49,8 @@
 				status: 200,
 				error: null,
 				nodes: [
-					import("/scannable/_app/pages/__layout.svelte-719a0b35.js"),
-						import("/scannable/_app/pages/qr.svelte-886b4e2a.js")
+					import("/scannable/_app/pages/__layout.svelte-44587ce7.js"),
+						import("/scannable/_app/pages/qr.svelte-543e97a1.js")
 				],
 				params: {},
 				routeId: "qr"
