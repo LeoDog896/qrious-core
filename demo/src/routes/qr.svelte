@@ -59,8 +59,8 @@
     options: { 
       foregroundChar: { type: "text", name: "Foreground Character", value: "%", defaultValue: "%" },
       backgroundChar: { type: "text", name: "Background Character", value: " ", defaultValue: " " },
-      thickness: { type: "number", name: "Thickness", value: 1, defaultValue: 1 },
-      padding: { type: "number", name: "Padding", value: 0, defaultValue: 0 },
+      thickness: { type: "number", name: "Thickness", value: 1, defaultValue: 1, min: 0 },
+      padding: { type: "number", name: "Padding", value: 0, defaultValue: 0, min: 0 },
       inverse: { type: "boolean", name: "Inverse", value: false, defaultValue: false }
     }
   }])
@@ -109,7 +109,7 @@
             {:else if option.type == "color"}
               <input type="color" bind:value={option.value}>
             {:else if option.type == "number"}
-              <input type="number" class="w-full" min={option.min ?? 0} max={option.max ?? 0} step={option.step ?? 1} bind:value={option.value}>
+              <input type="number" class="w-full" min={option.min ?? -10000000000} max={option.max ?? 10000000000} step={option.step ?? 1} bind:value={option.value}>
             {:else if option.type == "boolean"}
               <input type="checkbox" bind:checked={option.value}>
             {/if}
