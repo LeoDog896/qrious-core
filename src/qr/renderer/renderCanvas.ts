@@ -34,9 +34,6 @@ export const renderContext = (
   const moduleSizeWidth = Math.round(rawModuleSizeWidth);
   const moduleSizeHeight = Math.round(rawModuleSizeHeight);
 
-  const lastModuleSizeWidth = moduleSizeWidth > rawModuleSizeWidth ? Math.floor(rawModuleSizeWidth) : Math.ceil(rawModuleSizeWidth);
-  const lastModuleSizeHeight = moduleSizeHeight > rawModuleSizeHeight ? Math.floor(rawModuleSizeHeight) : Math.ceil(rawModuleSizeHeight);
-
   for (let i = 0; i < frame.width; i++) {
     for (let j = 0; j < frame.width; j++) {
       if (frame.buffer[(j * frame.width) + i]) {
