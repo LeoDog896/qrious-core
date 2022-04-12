@@ -28,14 +28,21 @@ export const renderContext = (
   
   const frame = generateFrame(processedOptions);
   
-  const moduleSizeWidth = getModuleSize(frame.width, processedOptions.width);
-  const moduleSizeHeight = getModuleSize(frame.width, processedOptions.height);
+  const rawModuleSizeWidth = getModuleSize(frame.width, processedOptions.width);
+  const rawModuleSizeHeight = getModuleSize(frame.width, processedOptions.height);
+
+  const moduleSizeWidth = Math.round(rawModuleSizeWidth);
+  const moduleSizeHeight = Math.round(rawModuleSizeHeight);
+
+  const lastModuleSizeWidth = moduleSizeWidth > rawModuleSizeWidth ? Math.floor(rawModuleSizeWidth) : Math.ceil(rawModuleSizeWidth);
+  const lastModuleSizeHeight = moduleSizeHeight > rawModuleSizeHeight ? Math.floor(rawModuleSizeHeight) : Math.ceil(rawModuleSizeHeight);
 
   for (let i = 0; i < frame.width; i++) {
     for (let j = 0; j < frame.width; j++) {
       if (frame.buffer[(j * frame.width) + i]) {
         context.fillStyle = processedOptions.foregroundColor;
         context.globalAlpha = processedOptions.foregroundAlpha;
+
         context.fillRect(
           (moduleSizeWidth * i) + processedOptions.x,
           (moduleSizeHeight * j) + processedOptions.y,
@@ -44,6 +51,7 @@ export const renderContext = (
       } else {
         context.fillStyle = processedOptions.backgroundColor;
         context.globalAlpha = processedOptions.backgroundAlpha;
+
         context.fillRect(
           (moduleSizeWidth * i) + processedOptions.x,
           (moduleSizeHeight * j) + processedOptions.y,
