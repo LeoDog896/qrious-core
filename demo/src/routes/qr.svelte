@@ -8,12 +8,19 @@
     name: "Simple Image",
     render: (value, canvas, options, size) => {
       clearCanvas(canvas)
-      canvas.getContext("2d").fillStyle = options.backgroundColor.value;
-      canvas.getContext("2d")?.fillRect(0, 0, canvas.width, canvas.height)
+      const context = canvas.getContext("2d")
+      context.fillStyle = options.backgroundColor.value;
+      context.globalAlpha = options.backgroundTransparency.value;
+      context.fillRect(0, 0, canvas.width, options.padding.value)
+      context.fillRect(0, options.padding.value, options.padding.value, canvas.height - options.padding.value * 2)
+      context.fillRect(canvas.width - options.padding.value, options.padding.value, options.padding.value, canvas.height - options.padding.value * 2)
+      context.fillRect(0, size + options.padding.value, canvas.width, options.padding.value)
       renderCanvas({ 
         value, 
         foregroundColor: options.foregroundColor.value,
         backgroundColor: options.backgroundColor.value,
+        foregroundAlpha: options.foregroundTransparency.value,
+        backgroundAlpha: options.backgroundTransparency.value,
         x: options.padding.value || 0,
         y: options.padding.value || 0,
         width: size,
@@ -23,21 +30,9 @@
     options: {
       foregroundColor: { type: "color", name: "Foreground Color", value: "#000000", defaultValue: "#000000" },
       backgroundColor: { type: "color", name: "Background Color", value: "#ffffff", defaultValue: "#ffffff" },
+      foregroundTransparency: { type: "number", name: "Foreground Transparency", value: 1, defaultValue: 1, min: 0, max: 1, step: 0.1 },
+      backgroundTransparency: { type: "number", name: "Background Transparency", value: 1, defaultValue: 1, min: 0, max: 1, step: 0.1 },
       padding: { type: "number", min: 0, name: "Padding", defaultValue: 0, value: 50 }
-    }
-  }, {
-    type: "canvas",
-    name: "Transparent Image",
-    render: (value, canvas, options) => {
-      clearCanvas(canvas);
-      renderCanvas({
-        value,
-        foregroundColor: options.foregroundColor.value,
-        backgroundAlpha: 0
-      }, canvas);
-    },
-    options: {
-      foregroundColor: { type: "color", name: "Foreground Color", value: "#000000", defaultValue: "#000000"}
     }
   }, {
     type: "text",
@@ -114,7 +109,7 @@
             {:else if option.type == "color"}
               <input type="color" bind:value={option.value}>
             {:else if option.type == "number"}
-              <input type="number" class="w-full" min={option.min ? option.min : 0} bind:value={option.value}>
+              <input type="number" class="w-full" min={option.min ?? 0} max={option.max ?? 0} step={option.step ?? 1} bind:value={option.value}>
             {:else if option.type == "boolean"}
               <input type="checkbox" bind:checked={option.value}>
             {/if}

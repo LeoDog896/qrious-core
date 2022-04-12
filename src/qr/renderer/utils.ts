@@ -12,8 +12,5 @@
  * @returns The width of the module.
  */
 export const getModuleSize = (size: number, frameSize: number): number => {
-  const pixels = Math.floor(frameSize / size);
-
-  // Restricted from 1-? to avoid modules being rendered lower than the resolution.
-  return Math.max(1, pixels);
+  return frameSize / size
 };

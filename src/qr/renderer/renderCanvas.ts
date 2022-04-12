@@ -3,7 +3,7 @@ import { defaultImageLikeRenderOptions, ImageLikeRenderOptions } from './options
 import { getModuleSize } from './utils';
 
 /**
- * Renders a QR code onto a canvascontext
+ * Renders a QR code onto a canvas context
  * 
  * @param options - the options to use for the frame.
  * @param context - The canvas context to use

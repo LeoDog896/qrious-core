@@ -9,8 +9,8 @@
   let w: number
 
   const baseSize = 100
-  $: chosenSize = baseSize + w / 4
-  $: size = chosenSize + ((selectedRenderSystem.options.padding?.value || 0) * 2)
+  $: chosenSize = Math.round(baseSize + w / 4)
+  $: size = Math.round(chosenSize + ((selectedRenderSystem.options.padding?.value || 0) * 2))
 
   $: if (size && selectedRenderSystem.type == "canvas") {
     tick().then(() => {

@@ -8,7 +8,7 @@ interface Option<T, R> {
 type TextOption = Option<string, "text">;
 type BooleanOption = Option<boolean, "boolean">;
 type ColorOption = Option<string, "color">
-type NumberOption = Option<number, "number"> & { readonly min?: number }
+type NumberOption = Option<number, "number"> & { readonly min?: number, readonly max?: number, readonly step?: number };
 type OptionsAdvanced = { readonly [key: string] : TextOption | BooleanOption | ColorOption | NumberOption }
 
 type ReturnCreateOptionsAdvanced<T extends OptionsAdvanced> = 
