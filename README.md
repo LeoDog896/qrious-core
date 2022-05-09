@@ -1,4 +1,4 @@
-# scannable
+<h1>scannable</h1>
 [![npm](https://img.shields.io/npm/v/scannable)](https://npmjs.com/package/scannable)
 [![GitHub](https://img.shields.io/badge/license-GPL%203.0--or--later-green)](https://github.com/LeoDog896/scannable/blob/master/LICENSE)
 [![demo](https://img.shields.io/badge/demo-live-brightgreen)](https://leodog896.github.io/scannable/qr)
@@ -8,7 +8,8 @@
 
 A simple scanning generation library.
 
-Website: https://leodog896.github.io/scannable
+Demo: https://leodog896.github.io/scannable
+TIP: If you want to try out the methods, open inspect element.
 
 ## Install
 ```bash
@@ -20,14 +21,17 @@ npm i scannable
 ```ts
 import { renderText, renderTwoTone, renderCanvas } from 'scannable/qr';
 
-// Outputs a qr code with regular text
+// Render it to a canvas
+renderCanvas("https://yahoo.net", coolCanvas)
+
+// Outputs a qr code with ASCII text
 renderText('https://example.com');
 
 // You can also specify optoins
 renderText({ value: "https://google.com", foregroundChar: "%" })
 
-// Or render it to a canvas
-renderCanvas("https://yahoo.net", coolCanvas)
+// You can even use unicode characters to squish text
+renderTwoTone('https://leodog896.github.io/scannable')
 ```
 
 ## Development

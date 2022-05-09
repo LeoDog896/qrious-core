@@ -11,9 +11,9 @@ text-center p-8 w-full h-screen text-white
 flex flex-col justify-center items-center
 bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate"
 >
-  <h1 class="text-6xl mb-4 drop-shadow-xl">Scannable</h1>
+  <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-4 drop-shadow-xl">Scannable</h1>
 
-  <h2 class="text-3xl mb-4 drop-shadow-lg">Generate QR codes and other things (maybe)</h2>
+  <h2 class="text-3xl mb-4 drop-shadow-lg">Generate QR codes</h2>
 
   <div class="flex flex-row">
     {#each links as link}
