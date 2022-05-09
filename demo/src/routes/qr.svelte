@@ -11,16 +11,12 @@
       const context = canvas.getContext("2d")
       context.fillStyle = options.backgroundColor.value;
       context.globalAlpha = options.backgroundTransparency.value;
-      context.fillRect(0, 0, canvas.width, options.padding.value)
-      context.fillRect(0, options.padding.value, options.padding.value, canvas.height - options.padding.value * 2)
-      context.fillRect(canvas.width - options.padding.value, options.padding.value, options.padding.value, canvas.height - options.padding.value * 2)
-      context.fillRect(0, size + options.padding.value, canvas.width, options.padding.value)
+      context.fillRect(0, 0, canvas.width, canvas.height)
       renderCanvas({ 
         value, 
         foregroundColor: options.foregroundColor.value,
         backgroundColor: options.backgroundColor.value,
-        foregroundAlpha: options.foregroundTransparency.value,
-        backgroundAlpha: options.backgroundTransparency.value,
+        // we dont specify background as it's handled by padding.
         x: options.padding.value || 0,
         y: options.padding.value || 0,
         width: size,
@@ -74,31 +70,7 @@
 
 </script>
 <div class="flex flex-row w-screen h-screen">
-  <div class="flex sm:flex-row flex-col flex-grow w-full">
-    <div class="h-full flex-grow p-8">
-      <textarea tabindex=0
-        placeholder="Type URL here (EX: https://example.com). The current QR code is empty."
-        class="flex-grow w-full text-center mb-8 print:hidden" bind:value={value}
-      />
-      <RenderSystemDisplay {selectedRenderSystem} {value} />
-    </div>
-    <div class="flex-shrink flex sm:flex-col flex-row sm:w-32 w-full sm:h-full bg-gray-100 print:hidden">
-      {#each renderSystems as renderSystem}
-        <div tabindex=0 class="
-          w-full text-center {selectedRenderSystem == renderSystem ? "bg-gray-200 font-bold" : "bg-gray-100"} hover:bg-gray-300
-          hover:cursor-pointer transition-colors p-4 text-lg
-        "
-        on:click={() => {selectedRenderSystem = renderSystem}}
-        on:keydown={(e) => {
-          if (e.key == "Enter") {
-            selectedRenderSystem = renderSystem
-          }
-        }}
-        >{renderSystem.name}</div>
-      {/each}
-    </div>
-  </div>
-  <div class="flex-row w-1/5 place-content-between hidden sm:block print:hidden">
+  <div class="bg-white z-10 flex-row w-1/5 place-content-between hidden sm:block print:hidden">
     {#if selectedRenderSystem.options}
       <div class="m-4 flex flex-wrap flex-col">
         {#each Object.values(selectedRenderSystem.options) as option}
@@ -109,7 +81,7 @@
             {:else if option.type == "color"}
               <input type="color" bind:value={option.value}>
             {:else if option.type == "number"}
-              <input type="number" class="w-full" min={option.min ?? -10000000000} max={option.max ?? 10000000000} step={option.step ?? 1} bind:value={option.value}>
+              <input type="number" class="w-full" min={option.min ?? Number.MIN_SAFE_INTEGER} max={option.max ?? Number.MAX_SAFE_INTEGER} step={option.step ?? 1} bind:value={option.value}>
             {:else if option.type == "boolean"}
               <input type="checkbox" bind:checked={option.value}>
             {/if}
@@ -117,5 +89,29 @@
         {/each}
       </div>
     {/if}
+  </div>
+  <div class="border-l border-gray-400 flex-shrink flex sm:flex-col flex-row sm:w-32 w-full sm:h-full bg-gray-100 print:hidden shadow-lg">
+    {#each renderSystems as renderSystem}
+      <div tabindex=0 class="
+        w-full text-center {selectedRenderSystem == renderSystem ? "bg-gray-200 font-bold" : "bg-gray-100"} hover:bg-gray-300
+        hover:cursor-pointer transition-colors p-6 px-8 text-lg
+      "
+      on:click={() => {selectedRenderSystem = renderSystem}}
+      on:keydown={(e) => {
+        if (e.key == "Enter") {
+          selectedRenderSystem = renderSystem
+        }
+      }}
+      >{renderSystem.name}</div>
+    {/each}
+  </div>
+  <div class="flex sm:flex-row flex-col flex-grow w-full">
+    <div class="h-full flex-grow p-8">
+      <textarea tabindex=0
+        placeholder="Type URL here (EX: https://example.com). The current QR code is empty."
+        class="flex-grow w-full text-center mb-8 print:hidden" bind:value={value}
+      />
+      <RenderSystemDisplay {selectedRenderSystem} {value} />
+    </div>
   </div>
 </div>

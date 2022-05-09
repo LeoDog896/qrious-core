@@ -12,5 +12,5 @@
  * @returns The width of the module.
  */
 export const getModuleSize = (size: number, frameSize: number): number => {
-  return frameSize / size
+  return frameSize / size;
 };

@@ -17,7 +17,7 @@ bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate"
 
   <div class="flex flex-row">
     {#each links as link}
-      <a href={link.href} class="drop-shadow-md text-xl underline mx-4 hover:gray-100">{link.name}</a>
+      <a href={link.href} class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">  {link.name}  </a>
     {/each}
   </div>
 </header>
