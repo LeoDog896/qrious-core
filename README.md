@@ -1,4 +1,5 @@
-<h1>scannable</h1>
+# scannable
+
 [![npm](https://img.shields.io/npm/v/scannable)](https://npmjs.com/package/scannable)
 [![GitHub](https://img.shields.io/badge/license-GPL%203.0--or--later-green)](https://github.com/LeoDog896/scannable/blob/master/LICENSE)
 [![demo](https://img.shields.io/badge/demo-live-brightgreen)](https://leodog896.github.io/scannable/qr)
