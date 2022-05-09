@@ -19,7 +19,7 @@ npm i scannable
 ## QR Generation
 
 ```ts
-import { renderText, renderTwoTone, renderCanvas } from 'scannable/qr';
+import { renderText, renderTwoTone, renderCanvas } from 'scannable';
 
 // Render it to a canvas
 renderCanvas("https://yahoo.net", coolCanvas)
