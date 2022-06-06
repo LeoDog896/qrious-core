@@ -1,5 +1,5 @@
 <script>
-  import { renderText, generateFrame } from '../../../src/qr';
+  import { renderText, generateFrame } from '../../../src';
   import { onMount } from "svelte"
 
   onMount(() => {

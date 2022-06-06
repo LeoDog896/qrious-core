@@ -1,6 +1,6 @@
 <script lang="ts">
   const links = [
-    { href: "/scannable/qr", name: "Demo" },
+    { href: "/scannable/demo", name: "Demo" },
     { href: "https://github.com/LeoDog896/scannable", name: "GitHub" },
     { href: "https://npmjs.com/package/scannable", name: "NPM" }
   ]

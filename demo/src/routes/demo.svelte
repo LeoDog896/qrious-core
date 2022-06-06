@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { renderCanvas, renderText, renderTwoTone } from "../../../src/qr"
+  import { renderCanvas, renderText, renderTwoTone, type MaskType } from "../../../src"
   import RenderSystemDisplay from "$lib/qr/RenderSystem.svelte";
   import { createRenderSystems } from "$lib/qr/rendererTypes";
 
@@ -20,7 +20,8 @@
         x: options.padding.value || 0,
         y: options.padding.value || 0,
         width: size,
-        height: size
+        height: size,
+        maskType: options.mask.value
       }, canvas)
     },
     options: {
@@ -28,7 +29,8 @@
       backgroundColor: { type: "color", name: "Background Color", value: "#ffffff", defaultValue: "#ffffff" },
       foregroundTransparency: { type: "number", name: "Foreground Transparency", value: 1, defaultValue: 1, min: 0, max: 1, step: 0.1 },
       backgroundTransparency: { type: "number", name: "Background Transparency", value: 1, defaultValue: 1, min: 0, max: 1, step: 0.1 },
-      padding: { type: "number", min: 0, name: "Padding", defaultValue: 0, value: 50 }
+      padding: { type: "number", min: 0, name: "Padding", defaultValue: 0, value: 50 },
+      mask: { type: "number", min: 0, max: 7, name: "Mask Number", defaultValue: 0, value: 0 }
     }
   }, {
     type: "text",
@@ -40,10 +42,11 @@
   }, {
     type: "text",
     name: "ASCII",
-    render: (value, { foregroundChar, backgroundChar, thickness, inverse, padding }) => renderText({ 
+    render: (value, { foregroundChar, backgroundChar, thickness, inverse, padding, mask }) => renderText({ 
       value, // NOTE: foreground = 0, background = 1
       foregroundChar: "0".repeat(thickness.value),
-      backgroundChar: "1".repeat(thickness.value)
+      backgroundChar: "1".repeat(thickness.value),
+      maskType: mask.value
     }).split("\n")
       .map(it => "1".repeat(padding.value) + it + "1".repeat(padding.value)) // padding
       .map(it => (it + "\n").repeat(thickness.value).slice(0, -1)) // thickness
@@ -57,7 +60,8 @@
       backgroundChar: { type: "text", name: "Background Character", value: " ", defaultValue: " " },
       thickness: { type: "number", name: "Thickness", value: 1, defaultValue: 1, min: 0 },
       padding: { type: "number", name: "Padding", value: 0, defaultValue: 0, min: 0 },
-      inverse: { type: "boolean", name: "Inverse", value: false, defaultValue: false }
+      inverse: { type: "boolean", name: "Inverse", value: false, defaultValue: false },
+      mask: { type: "number", min: 0, max: 7, name: "Mask Number", defaultValue: 0, value: 0 }
     }
   }])
 
