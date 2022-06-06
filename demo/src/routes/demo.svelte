@@ -20,8 +20,7 @@
         x: options.padding.value || 0,
         y: options.padding.value || 0,
         width: size,
-        height: size,
-        maskType: options.mask.value
+        height: size
       }, canvas)
     },
     options: {
@@ -45,8 +44,7 @@
     render: (value, { foregroundChar, backgroundChar, thickness, inverse, padding, mask }) => renderText({ 
       value, // NOTE: foreground = 0, background = 1
       foregroundChar: "0".repeat(thickness.value),
-      backgroundChar: "1".repeat(thickness.value),
-      maskType: mask.value
+      backgroundChar: "1".repeat(thickness.value)
     }).split("\n")
       .map(it => "1".repeat(padding.value) + it + "1".repeat(padding.value)) // padding
       .map(it => (it + "\n").repeat(thickness.value).slice(0, -1)) // thickness
