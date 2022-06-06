@@ -20,7 +20,8 @@
         x: options.padding.value || 0,
         y: options.padding.value || 0,
         width: size,
-        height: size
+        height: size,
+        maskType: options.customMask.value ? options.mask.value : undefined
       }, canvas)
     },
     options: {
@@ -29,22 +30,30 @@
       foregroundTransparency: { type: "number", name: "Foreground Transparency", value: 1, defaultValue: 1, min: 0, max: 1, step: 0.1 },
       backgroundTransparency: { type: "number", name: "Background Transparency", value: 1, defaultValue: 1, min: 0, max: 1, step: 0.1 },
       padding: { type: "number", min: 0, name: "Padding", defaultValue: 0, value: 50 },
+      customMask: { type: "boolean", value: false, defaultValue: false, name: "Custom Mask" },
       mask: { type: "number", min: 0, max: 7, name: "Mask Number", defaultValue: 0, value: 0 }
     }
   }, {
     type: "text",
     name: "Unicode",
-    render: renderTwoTone,
+    render: (value, options) => renderTwoTone({
+      value,
+      maskType: options.customMask.value ? options.mask.value : null
+    }),
     lineSpacing: "1.1rem",
     tracking: "-0.05em",
-    options: {}
+    options: {
+      customMask: { type: "boolean", value: false, defaultValue: false, name: "Custom Mask" },
+      mask: { type: "number", min: 0, max: 7, name: "Mask Number", defaultValue: 0, value: 0 }
+    }
   }, {
     type: "text",
     name: "ASCII",
-    render: (value, { foregroundChar, backgroundChar, thickness, inverse, padding, mask }) => renderText({ 
+    render: (value, { foregroundChar, backgroundChar, thickness, inverse, padding, customMask, mask }) => renderText({ 
       value, // NOTE: foreground = 0, background = 1
       foregroundChar: "0".repeat(thickness.value),
-      backgroundChar: "1".repeat(thickness.value)
+      backgroundChar: "1".repeat(thickness.value),
+      maskType: customMask.value ? mask.value : null
     }).split("\n")
       .map(it => "1".repeat(padding.value) + it + "1".repeat(padding.value)) // padding
       .map(it => (it + "\n").repeat(thickness.value).slice(0, -1)) // thickness
@@ -59,6 +68,7 @@
       thickness: { type: "number", name: "Thickness", value: 1, defaultValue: 1, min: 0 },
       padding: { type: "number", name: "Padding", value: 0, defaultValue: 0, min: 0 },
       inverse: { type: "boolean", name: "Inverse", value: false, defaultValue: false },
+      customMask: { type: "boolean", value: true, defaultValue: true, name: "Custom Mask" },
       mask: { type: "number", min: 0, max: 7, name: "Mask Number", defaultValue: 0, value: 0 }
     }
   }])
@@ -72,7 +82,7 @@
 
 </script>
 <div class="flex flex-row w-screen h-screen">
-  <div class="bg-white z-10 flex-row w-1/5 place-content-between hidden sm:block print:hidden">
+  <div class="bg-white z-10 flex-row w-1/5 place-content-between hidden sm:block print:hidden overflow-x-scroll">
     {#if selectedRenderSystem.options}
       <div class="m-4 flex flex-wrap flex-col">
         {#each Object.values(selectedRenderSystem.options) as option}
