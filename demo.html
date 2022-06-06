@@ -7,18 +7,18 @@
 		<link rel="icon" href="/scannable/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta http-equiv="content-security-policy" content="">
-	<link rel="stylesheet" href="/scannable/_app/assets/pages/__layout.svelte-4c6e9b9f.css">
-	<link rel="modulepreload" href="/scannable/_app/start-115eedb0.js">
-	<link rel="modulepreload" href="/scannable/_app/chunks/index-5fbbacfd.js">
-	<link rel="modulepreload" href="/scannable/_app/pages/__layout.svelte-b70e3397.js">
-	<link rel="modulepreload" href="/scannable/_app/chunks/image-a2419ccc.js">
-	<link rel="modulepreload" href="/scannable/_app/pages/qr.svelte-5850a5d4.js">
+	<link rel="stylesheet" href="/scannable/_app/immutable/assets/pages/__layout.svelte-9ac462a8.css">
+	<link rel="modulepreload" href="/scannable/_app/immutable/start-a6cdb4fc.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/chunks/index-af3542d5.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/pages/__layout.svelte-f8c26396.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/chunks/image-d5d9ebd0.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/pages/demo.svelte-2df0e8fe.js">
 	</head>
 	<body class="w-screen h-screen">
 		<div class="w-full h-full">
 
 
-<div class="flex flex-row w-screen h-screen"><div class="bg-white z-10 flex-row w-1/5 place-content-between hidden sm:block print:hidden"><div class="m-4 flex flex-wrap flex-col"><div class="border-b mb-12 border-gray-400"><label for="Foreground Color">Foreground Color:</label>
+<div class="flex flex-row w-screen h-screen"><div class="bg-white z-10 flex-row w-1/5 place-content-between hidden sm:block print:hidden overflow-x-scroll"><div class="m-4 flex flex-wrap flex-col"><div class="border-b mb-12 border-gray-400"><label for="Foreground Color">Foreground Color:</label>
             <input type="color" value="#000000">
           </div><div class="border-b mb-12 border-gray-400"><label for="Background Color">Background Color:</label>
             <input type="color" value="#ffffff">
@@ -28,6 +28,10 @@
             <input type="number" class="w-full" min="0" max="1" step="0.1" value="1">
           </div><div class="border-b mb-12 border-gray-400"><label for="Padding">Padding:</label>
             <input type="number" class="w-full" min="0" max="9007199254740991" step="1" value="50">
+          </div><div class="border-b mb-12 border-gray-400"><label for="Custom Mask">Custom Mask:</label>
+            <input type="checkbox">
+          </div><div class="border-b mb-12 border-gray-400"><label for="Mask Number">Mask Number:</label>
+            <input type="number" class="w-full" min="0" max="7" step="1" value="0">
           </div></div></div>
   <div class="border-l border-gray-400 flex-shrink flex sm:flex-col flex-row sm:w-32 w-full sm:h-full bg-gray-100 print:hidden shadow-lg"><div tabindex="0" class="w-full text-center bg-gray-200 font-bold hover:bg-gray-300 hover:cursor-pointer transition-colors p-6 px-8 text-lg">Simple Image</div><div tabindex="0" class="w-full text-center bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-6 px-8 text-lg">Unicode</div><div tabindex="0" class="w-full text-center bg-gray-100 hover:bg-gray-300 hover:cursor-pointer transition-colors p-6 px-8 text-lg">ASCII</div></div>
   <div class="flex sm:flex-row flex-col flex-grow w-full"><div class="h-full flex-grow p-8"><textarea tabindex="0" placeholder="Type URL here (EX: https://example.com). The current QR code is empty." class="flex-grow w-full text-center mb-8 print:hidden"></textarea>
@@ -36,10 +40,10 @@
 <canvas class="m-auto" height="NaN" width="NaN"></canvas></div></div></div>
 
 
-		<script type="module" data-hydrate="10s8ef4">
-		import { start } from "/scannable/_app/start-115eedb0.js";
+		<script type="module" data-sveltekit-hydrate="14f3tuq">
+		import { start } from "/scannable/_app/immutable/start-a6cdb4fc.js";
 		start({
-			target: document.querySelector('[data-hydrate="10s8ef4"]').parentNode,
+			target: document.querySelector('[data-sveltekit-hydrate="14f3tuq"]').parentNode,
 			paths: {"base":"/scannable","assets":"/scannable"},
 			session: {},
 			route: true,
@@ -48,12 +52,9 @@
 			hydrate: {
 				status: 200,
 				error: null,
-				nodes: [
-					import("/scannable/_app/pages/__layout.svelte-b70e3397.js"),
-						import("/scannable/_app/pages/qr.svelte-5850a5d4.js")
-				],
+				nodes: [0, 2],
 				params: {},
-				routeId: "qr"
+				routeId: "demo"
 			}
 		});
 	</script></div>
