@@ -1,6 +1,6 @@
 import { UserFacingFrameOptions, generateFrame } from '../Frame';
 import { defaultImageLikeRenderOptions, ImageLikeRenderOptions } from './options/image';
-import { getModuleSize } from './utils';
+import { getModuleSize } from '../utils';
 
 /**
  * Renders a QR code onto a canvas context

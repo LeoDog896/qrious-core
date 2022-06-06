@@ -1,4 +1,5 @@
 import { FrameOptions, UserFacingFrameOptions, defaultFrameOptions, generateFrame } from '../Frame';
+import { WithRequired } from '../utils';
 
 interface TwoToneRenderOptions extends FrameOptions {
   readonly solidCharacter: string;
@@ -15,7 +16,7 @@ interface TwoToneRenderOptions extends FrameOptions {
  * @returns A QR code in text format.
  */
 export const renderTwoTone = (options: Readonly<UserFacingFrameOptions<TwoToneRenderOptions>> | string): string => {
-  const processedOptions: Required<TwoToneRenderOptions> = {
+  const processedOptions: WithRequired<TwoToneRenderOptions, "value"> = {
     ...defaultFrameOptions,
     solidCharacter: '█',
     solidTopCharacter: '▀',

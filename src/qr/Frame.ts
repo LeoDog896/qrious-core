@@ -16,6 +16,19 @@ import * as Alignment from './constants/alignment';
 import * as ErrorCorrection from './constants/errorCorrection';
 import * as Galois from './constants/galois';
 import * as Version from './constants/version';
+import { WithRequired } from './utils';
+
+/* All Mask types with visible descriptions. */
+export enum MaskType {
+  ALTERNATING_TILES = 0,
+  ALTERNATING_HORIZONTAL_LINES = 1,
+  ALTERNATING_VERTICAL_LINES_TWO_GAP = 2,
+  DIAGONAL = 3,
+  FOUR_BY_TWO_RECTANGLE_ALTERNATING = 4,
+  FLOWER_IN_SQAURE = 5,
+  DIAGONAL_SQUARE = 6,
+  ALTERNATING_PUZZLE_PIECE = 7
+}
 
 /**
  * The options used by {@link Frame}.
@@ -25,6 +38,8 @@ export interface FrameOptions {
   readonly value: string;
   /** The ECC level to be used. Default is L */
   readonly level: ErrorCorrection.Level;
+  /** The mask type. IF none is specified, one will be automatically chosen based on badness. */
+  readonly maskType?: MaskType
 }
 
 /** Utility to make value required for users inputting in a value. */
@@ -56,7 +71,9 @@ export type ReadOnlyBinaryUint8Array = ReadOnlyUint8ArrayLike<BinaryUint8Array, 
  */
 export type ReadOnlyUint8Array = ReadOnlyUint8ArrayLike<Uint8Array, number>
 
-export const defaultFrameOptions: RenderOptionsDefaults<FrameOptions> = Object.freeze({ level: 'L' });
+export const defaultFrameOptions: RenderOptionsDefaults<FrameOptions> = Object.freeze({
+  level: 'L'
+});
 
 // *Badness* coefficients.
 const N1 = 3;
@@ -287,158 +304,25 @@ function appendEccToData(dataBlock: number, neccBlock1: number, neccBlock2: numb
   }
 }
 
-/* All Mask types with visible descriptions. */
-export enum MaskType {
-  ALTERNATING_TILES = 0,
-  ALTERNATING_HORIZONTAL_LINES = 1,
-  ALTERNATING_VERTICAL_LINES_TWO_GAP = 2,
-  DIAGONAL = 3,
-  FOUR_BY_TWO_RECTANGLE_ALTERNATING = 4,
-  FLOWER_IN_SQAURE = 5,
-  DIAGONAL_SQUARE = 6,
-  ALTERNATING_PUZZLE_PIECE = 7
-}
-
 /** 
  * Applies a mask to the buffer
  */
 export function applyMask(width: number, buffer: BinaryUint8Array, mask: MaskType, currentMask: BinaryUint8Array) {
-  switch (mask) {
-  case MaskType.ALTERNATING_TILES:
-    /* This mask goes as:
-    * 10101010101
-    * 01010101010
-    * and so on 
-    */ 
-    for (let y = 0; y < width; y++) {
-      for (let x = 0; x < width; x++) {
-        if (!((x + y) & 1) && !isMasked(x, y, currentMask)) {
-          buffer[x + (y * width)] ^= 1;
-        }
+  for (let y = 0; y < width; y++) {
+    for (let x = 0; x < width; x++) {
+      const invert = mask == MaskType.ALTERNATING_TILES ? (x + y) % 2 == 0 :
+        mask == MaskType.ALTERNATING_HORIZONTAL_LINES ? (y % 2) == 0 :
+        mask == MaskType.ALTERNATING_VERTICAL_LINES_TWO_GAP ? (x % 3) == 0 :
+        mask == MaskType.DIAGONAL ? (x + y) % 3 == 0 :
+        mask == MaskType.FOUR_BY_TWO_RECTANGLE_ALTERNATING ? (Math.floor(x / 3) + Math.floor(y / 2)) % 2 == 0 :
+        mask == MaskType.FLOWER_IN_SQAURE ? x * y % 2 + x * y % 3 == 0 :
+				mask == MaskType.DIAGONAL_SQUARE ? (x * y % 2 + x * y % 3) % 2 == 0 :
+				mask == MaskType.ALTERNATING_PUZZLE_PIECE ? ((x + y) % 2 + x * y % 3) % 2 == 0 : null;
+    
+      if (invert && !isMasked(x, y, currentMask)) {
+        buffer[x + (y * width)] ^= 1;
       }
     }
-
-    break;
-  case MaskType.ALTERNATING_HORIZONTAL_LINES:
-    // Alternating straight lines. The first line is 1, the second is 0, and so forth
-    for (let y = 0; y < width; y++) {
-      for (let x = 0; x < width; x++) {
-        if (!(y & 1) && !isMasked(x, y, currentMask)) {
-          buffer[x + (y * width)] ^= 1;
-        }
-      }
-    }
-
-    break;
-  case MaskType.ALTERNATING_VERTICAL_LINES_TWO_GAP:
-    // Vertical straight lines, with the pattern: 1001001
-    for (let y = 0; y < width; y++) {
-      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
-        if (r3x === 3) {
-          r3x = 0;
-        }
-
-        if (!r3x && !isMasked(x, y, currentMask)) {
-          buffer[x + (y * width)] ^= 1;
-        }
-      }
-    }
-
-    break;
-  case MaskType.DIAGONAL:
-    // Diagonal lines, as so:
-    // 01001
-    // 10010
-    // 00100
-    // 01001
-    // 10010
-    for (let r3y = 0, y = 0; y < width; y++, r3y++) {
-      if (r3y === 3) {
-        r3y = 0;
-      }
-
-      for (let r3x = r3y, x = 0; x < width; x++, r3x++) {
-        if (r3x === 3) {
-          r3x = 0;
-        }
-
-        if (!r3x && isMasked(x, y, currentMask) ^ 1) {
-          buffer[x + (y * width)] ^= 1;
-        }
-      }
-    }
-
-    break;
-  case MaskType.FOUR_BY_TWO_RECTANGLE_ALTERNATING:
-    for (let y = 0; y < width; y++) {
-      for (let r3x = 0, r3y = (y >> 1) & 1, x = 0; x < width; x++, r3x++) {
-        if (r3x === 3) {
-          r3x = 0;
-          r3y = +!r3y;
-        }
-
-        if (!r3y && isMasked(x, y, currentMask) ^ 1) {
-          buffer[x + (y * width)] ^= 1;
-        }
-      }
-    }
-
-    break;
-  case MaskType.FLOWER_IN_SQAURE:
-    for (let r3y = 0, y = 0; y < width; y++, r3y++) {
-      if (r3y === 3) {
-        r3y = 0;
-      }
-
-      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
-        if (r3x === 3) {
-          r3x = 0;
-        }
-
-        if (!((x & y & 1) + (r3x ^ 1 | r3y ^ 1) ^ 1) && isMasked(x, y, currentMask) ^ 1) {
-          buffer[x + (y * width)] ^= 1;
-        }
-      }
-    }
-
-    break;
-  case MaskType.DIAGONAL_SQUARE:
-    for (let r3y = 0, y = 0; y < width; y++, r3y++) {
-      if (r3y === 3) {
-        r3y = 0;
-      }
-
-      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
-        if (r3x === 3) {
-          r3x = 0;
-        }
-
-        if (((x & y & 1) + +(r3x && r3x === r3y) & 1) ^ 1 && isMasked(x, y, currentMask) ^ 1) {
-          buffer[x + (y * width)] ^= 1;
-        }
-      }
-    }
-
-    break;
-  case MaskType.ALTERNATING_PUZZLE_PIECE:
-    // Eternal hell
-    for (let r3y = 0, y = 0; y < width; y++, r3y++) {
-      if (r3y === 3) {
-        r3y = 0;
-      }
-
-      for (let r3x = 0, x = 0; x < width; x++, r3x++) {
-        if (r3x === 3) {
-          r3x = 0;
-        }
-
-        if ((+(r3x && r3x === r3y) + (x + y & 1) & 1) ^ 1 && isMasked(x, y, currentMask) ^ 1) {
-          buffer[x + (y * width)] ^= 1;
-        }
-      }
-    }
-
-    break;
   }
 }
 
@@ -646,44 +530,50 @@ function convertBitStream(version: number, value: string, ecc: Uint8Array, dataB
  @param width - The width of the QR code.
  @param oldCurrentMask - The mask array of the QR code.
  */
-function finish(level: number, buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
+function finish(level: number, chosenMask: MaskType | undefined, buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
   // Save pre-mask copy of frame.
   const tempBuffer = new Uint8Array(buffer) as BinaryUint8Array;
   let i: number;
-  let bit = 0;
+  let bit: MaskType = chosenMask ?? 0;
   let bestMaskBadness = 30000;
 
-  /*
-    * Using for instead of while since in original Arduino code if an early mask was "good enough" it wouldn't try for
-    * a better one since they get more complex and take longer.
-    * 
-    * There are 7 different mask patterns, and this for loop checks each of them.
-    * 
-    * MaskType
-    */
-  for (i = 0; i < 8; i++) {
-    // Returns foreground-background imbalance.
-    applyMask(width, buffer, i, oldCurrentMask);
+  if (chosenMask === undefined) {
 
-    const currentMaskBadness = checkBadness(buffer, width);
+    /*
+      * Using for instead of while since in original Arduino code if an early mask was "good enough" it wouldn't try for
+      * a better one since they get more complex and take longer.
+      * 
+      * There are 7 different mask patterns, and this for loop checks each of them.
+      * 
+      * MaskType
+      */
+    for (i = 0; i < 8; i++) {
+      // Returns foreground-background imbalance.
+      applyMask(width, buffer, i, oldCurrentMask);
 
-    // Is current mask better than previous best?
-    if (currentMaskBadness < bestMaskBadness) {
-      bestMaskBadness = currentMaskBadness;
-      bit = i;
+      const currentMaskBadness = checkBadness(buffer, width);
+
+      // Is current mask better than previous best?
+      if (currentMaskBadness < bestMaskBadness) {
+        bestMaskBadness = currentMaskBadness;
+        bit = i;
+      }
+
+      // Don't increment "i" to a void redoing mask.
+      if (bit === 7) {
+        break;
+      }
+
+      // Reset for next pass.
+      buffer = new Uint8Array(tempBuffer) as BinaryUint8Array;
     }
 
-    // Don't increment "i" to a void redoing mask.
-    if (bit === 7) {
-      break;
+    // Redo best mask as none were "good enough" (i.e. last wasn't bit).
+    if (bit !== i) {
+      applyMask(width, buffer, bit, oldCurrentMask);
     }
 
-    // Reset for next pass.
-    buffer = new Uint8Array(tempBuffer) as BinaryUint8Array;
-  }
-
-  // Redo best mask as none were "good enough" (i.e. last wasn't bit).
-  if (bit !== i) {
+  } else {
     applyMask(width, buffer, bit, oldCurrentMask);
   }
 
@@ -882,6 +772,9 @@ function insertTimingRowAndColumn(buffer: BinaryUint8Array, mask: BinaryUint8Arr
   }
 }
 
+/**
+ * Inserts the version data into the QR code. Adjacent to two finders.
+ */
 function insertVersion(buffer: BinaryUint8Array, width: number, version: number, mask: BinaryUint8Array) {
 
   if (version <= 6) {
@@ -988,7 +881,7 @@ export interface FrameResults {
  * @param options - the options to be used
  */
 export function generateFrame(options: UserFacingFrameOptions): FrameResults {
-  const processedOptions: Required<FrameOptions> = { ...defaultFrameOptions, ...options };
+  const processedOptions: WithRequired<FrameOptions, "value"> = { ...defaultFrameOptions, ...options };
 
   const level = ErrorCorrection.LEVELS[processedOptions.level];
   const value = options.value;
@@ -1023,7 +916,7 @@ export function generateFrame(options: UserFacingFrameOptions): FrameResults {
   appendEccToData(dataBlock, neccBlock1, neccBlock2, eccBlock, polynomial, stringBuffer);
   const newStringBuffer = interleaveBlocks(ecc, eccBlock, dataBlock, neccBlock1, neccBlock2, stringBuffer.slice());
   pack(width, dataBlock, eccBlock, neccBlock1, neccBlock2, mask, buffer, newStringBuffer);
-  buffer = finish(level, buffer, width, mask);
+  buffer = finish(level, processedOptions.maskType, buffer, width, mask);
 
   return {
     width,

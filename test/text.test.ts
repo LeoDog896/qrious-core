@@ -1,4 +1,4 @@
-import { renderText } from '../src/qr';
+import { renderText } from '../src';
 import { createReadStream } from 'fs';
 import split from 'split';
 

@@ -1,5 +1,5 @@
 import { FrameOptions, UserFacingFrameOptions, defaultFrameOptions, generateFrame, FrameResults } from '../Frame';
-
+import { WithRequired } from '../utils';
 interface IsolatedTextRenderOptions {
   /** The activated characters (black on a regular QR code.) */
   readonly foregroundChar: string;
@@ -40,7 +40,7 @@ type TextRenderOptions = FrameOptions & IsolatedTextRenderOptions;
  * @returns The QR code in text format
  */
 export const renderText = (options: Readonly<UserFacingFrameOptions<TextRenderOptions>> | string): string => {
-  const processedOptions: Required<TextRenderOptions> = {
+  const processedOptions: WithRequired<TextRenderOptions, "value"> = {
     ...defaultFrameOptions,
     foregroundChar: '#',
     backgroundChar: ' ',
