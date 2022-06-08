@@ -210,7 +210,7 @@ function addAlignment(x: number, y: number, buffer: BinaryUint8Array, mask: Bina
 }
 
 function appendData(data: number, dataLength: number, ecc: number, eccLength: number, polynomial: Uint8Array, stringBuffer: Uint8Array) {
-  let bit;
+  let bit: number;
 
   for (let i = 0; i < eccLength; i++) {
     stringBuffer[ecc + i] = 0;
@@ -345,7 +345,7 @@ function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number): number {
     }
   }
 
-  let b1;
+  let b1: number;
   let bw = 0;
 
   // X runs.
@@ -370,9 +370,7 @@ function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number): number {
     bad += getBadness(h, badness);
   }
 
-  if (bw < 0) {
-    bw = -bw;
-  }
+  bw = Math.abs(bw);
 
   let count = 0;
   let big = bw;
@@ -421,7 +419,7 @@ function checkBadness(buffer: ReadOnlyBinaryUint8Array, width: number): number {
  * @returns A new ecc block
  */
 function convertBitStream(version: number, value: string, ecc: Uint8Array, dataBlock: number, neccBlock1: number, neccBlock2: number): Uint8Array {
-  let bit;
+  let bit: number;
   let length = value.length;
 
   // Convert string to bit stream. 8-bit data to QR-coded 8-bit data (numeric, alphanumeric, or kanji not supported).
@@ -570,7 +568,7 @@ function finish(level: number, chosenMask: MaskType | null | undefined, buffer: 
 }
 
 function interleaveBlocks(ecc: Uint8Array, eccBlock: number, dataBlock: number, neccBlock1: number, neccBlock2: number, stringBuffer: Uint8Array): Uint8Array {
-  let i;
+  let i: number;
   let k = 0;
   const maxLength = calculateMaxLength(dataBlock, neccBlock1, neccBlock2);
 
@@ -844,7 +842,6 @@ export function generateFrame(options: UserFacingFrameOptions): FrameResults {
   const processedOptions: WithRequired<FrameOptions, "value"> = { ...defaultFrameOptions, ...options };
 
   const level = ErrorCorrection.LEVELS[processedOptions.level];
-  const value = options.value;
 
   const { 
     version, neccBlock1, neccBlock2,
@@ -871,7 +868,7 @@ export function generateFrame(options: UserFacingFrameOptions): FrameResults {
   insertVersion(buffer, width, version, mask);
   syncMask(width, mask, buffer);
 
-  const stringBuffer = convertBitStream(version, value, ecc, dataBlock, neccBlock1, neccBlock2);
+  const stringBuffer = convertBitStream(version, options.value, ecc, dataBlock, neccBlock1, neccBlock2);
   const polynomial = calculatePolynomial(eccBlock);
   appendEccToData(dataBlock, neccBlock1, neccBlock2, eccBlock, polynomial, stringBuffer);
   const newStringBuffer = interleaveBlocks(ecc, eccBlock, dataBlock, neccBlock1, neccBlock2, stringBuffer.slice());
