@@ -7,30 +7,33 @@
 		<link rel="icon" href="/scannable/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta http-equiv="content-security-policy" content="">
-	<link rel="stylesheet" href="/scannable/_app/immutable/assets/pages/__layout.svelte-9ac462a8.css">
+	<link rel="stylesheet" href="/scannable/_app/immutable/assets/pages/__layout.svelte-d17ed291.css">
 	<link rel="stylesheet" href="/scannable/_app/immutable/assets/pages/index.svelte-6fb6bd6f.css">
-	<link rel="modulepreload" href="/scannable/_app/immutable/start-fa1ff25e.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/start-d2b8d295.js">
 	<link rel="modulepreload" href="/scannable/_app/immutable/chunks/index-af3542d5.js">
-	<link rel="modulepreload" href="/scannable/_app/immutable/pages/__layout.svelte-f8c26396.js">
-	<link rel="modulepreload" href="/scannable/_app/immutable/chunks/image-d5d9ebd0.js">
-	<link rel="modulepreload" href="/scannable/_app/immutable/pages/index.svelte-a4a740e8.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/pages/__layout.svelte-65b14772.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/chunks/renderText-6c30e55b.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/chunks/renderCanvas-ae2dc07d.js">
+	<link rel="modulepreload" href="/scannable/_app/immutable/pages/index.svelte-997c03c5.js">
 	</head>
 	<body class="w-screen h-screen">
 		<div class="w-full h-full">
 
 
-<header class="text-center p-8 w-full h-screen text-white flex flex-col justify-center items-center bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate svelte-1n7kv7d"><h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-4 drop-shadow-xl">Scannable</h1>
+<header class="text-center p-8 w-full min-h-screen h-max text-white flex flex-col lg:flex-row justify-around items-center bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate svelte-1n7kv7d"><div class="text-center"><h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 drop-shadow-xl">Scannable</h1>
 
-  <h2 class="text-3xl mb-4 drop-shadow-lg">Generate QR codes</h2>
+    <h2 class="text-3xl mb-4 drop-shadow-lg">Generate QR codes</h2>
 
-  <div class="flex flex-row"><a href="/scannable/demo" class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">Demo  </a><a href="https://github.com/LeoDog896/scannable" class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">GitHub  </a><a href="https://npmjs.com/package/scannable" class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">NPM  </a></div>
+    <div class="flex flex-row w-full justify-center"><a href="/scannable/demo" class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">Demo  </a><a href="https://github.com/LeoDog896/scannable" class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">GitHub  </a><a href="https://npmjs.com/package/scannable" class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">NPM  </a></div></div>
+
+  <div class="lg:mt-0 mt-20 p-8 rounded-lg bg-white "><canvas width="400" height="400"></canvas></div>
 </header>
 
 
-		<script type="module" data-sveltekit-hydrate="nv2o7o">
-		import { start } from "/scannable/_app/immutable/start-fa1ff25e.js";
+		<script type="module" data-sveltekit-hydrate="1a7bg3v">
+		import { start } from "/scannable/_app/immutable/start-d2b8d295.js";
 		start({
-			target: document.querySelector('[data-sveltekit-hydrate="nv2o7o"]').parentNode,
+			target: document.querySelector('[data-sveltekit-hydrate="1a7bg3v"]').parentNode,
 			paths: {"base":"/scannable","assets":"/scannable"},
 			session: {},
 			route: true,
