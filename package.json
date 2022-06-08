@@ -41,7 +41,7 @@
     "test:watch": "jest --watch --coverage",
     "lint": "eslint",
     "prepare": "npm run build",
-    "size": "size-limit",
+    "size": "npm run build && size-limit",
     "analyze": "size-limit --why",
     "prepublishOnly": "npm run build && npm run size && eslint"
   },
@@ -60,7 +60,7 @@
   "size-limit": [
     {
       "path": "dist/index.js",
-      "limit": "10 KB"
+      "limit": "6 KB"
     }
   ],
   "devDependencies": {

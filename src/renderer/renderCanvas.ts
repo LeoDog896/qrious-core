@@ -9,8 +9,6 @@ export interface ImageLikeRenderOptions extends FrameOptions {
   readonly height: number;
   readonly x: number;
   readonly y: number;
-  readonly moduleSizeWidth: number;
-  readonly moduleSizeHeight: number;
 }
 
 export const defaultImageLikeRenderOptions: RenderOptionsDefaults<ImageLikeRenderOptions> = Object.freeze({
@@ -22,8 +20,6 @@ export const defaultImageLikeRenderOptions: RenderOptionsDefaults<ImageLikeRende
   height: 100,
   x: 0,
   y: 0,
-  moduleSizeWidth: 0,
-  moduleSizeHeight: 0,
   ...defaultFrameOptions
 });
 

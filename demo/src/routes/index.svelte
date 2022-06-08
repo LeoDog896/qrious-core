@@ -1,12 +1,5 @@
 <script lang="ts">
-  import { renderCanvas } from "../../../src";
-  import { onMount } from "svelte";
-
-  let canvas: HTMLCanvasElement
-
-  onMount(() => {
-    renderCanvas("https://leodog896.github.io/scannable", canvas)
-  });
+  import { renderSVG } from "../../../src";
 
   const links = [
     { href: "/scannable/demo", name: "Demo" },
@@ -33,7 +26,7 @@ bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate"
   </div>
 
   <div class="lg:mt-0 mt-20 p-8 rounded-lg bg-white                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ">
-    <canvas bind:this={canvas} width=400 height=400></canvas>
+    {@html renderSVG({ value: "https://leodog896.github.io/scannable", width: 400, height: 400 })}
   </div>
 </header>
 
