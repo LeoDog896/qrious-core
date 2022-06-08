@@ -1,7 +1,7 @@
 {
   "name": "scannable",
   "version": "0.5.1",
-  "description": "A general purpose scannable creation library.",
+  "description": "Create QR codes with ease.",
   "homepage": "https://leodog896.github.io/scannable",
   "repository": "https://github.com/LeoDog896/scannable",
   "bugs": {
@@ -22,8 +22,8 @@
   "license": "GPL-3.0",
   "keywords": [
     "qr",
-    "code",
-    "scannable"
+    "qrcode",
+    "qr-code"
   ],
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -35,20 +35,19 @@
     "node": ">=15"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build --format esm",
-    "test": "tsdx test",
-    "test:watch": "tsdx test --watch --coverage",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
+    "start": "npm run test:watch",
+    "build": "tsc",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch --coverage",
+    "lint": "eslint",
+    "prepare": "npm run build",
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "noCJS": "rm -f ./dist/*.cjs.*",
-    "prepublishOnly": "npm run build && npm run noCJS && npm run size && eslint"
+    "prepublishOnly": "npm run build && npm run size && eslint"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "tsdx lint"
+      "pre-commit": "npm run lint"
     }
   },
   "prettier": {
@@ -57,10 +56,10 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "module": "dist/scannable.esm.js",
+  "module": "dist/index.js",
   "size-limit": [
     {
-      "path": "dist/scannable.esm.js",
+      "path": "dist/index.js",
       "limit": "10 KB"
     }
   ],
@@ -76,11 +75,10 @@
     "eslint-plugin-perf-standard": "^1.0.3",
     "eslint-plugin-tsdoc": "^0.2.14",
     "husky": "^8.0.1",
+    "jest": "^28.1.1",
     "size-limit": "^7.0.8",
     "split": "^1.0.1",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.3.1",
-    "tsutils": "^3.21.0",
+    "ts-jest": "^28.0.4",
     "typescript": "^4.6.2"
   }
 }

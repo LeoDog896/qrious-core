@@ -15,7 +15,7 @@
       renderCanvas({ 
         value, 
         foregroundColor: options.foregroundColor.value,
-        backgroundColor: options.backgroundColor.value,
+        backgroundAlpha: 0,
         // we dont specify background as it's handled by padding.
         x: options.padding.value || 0,
         y: options.padding.value || 0,

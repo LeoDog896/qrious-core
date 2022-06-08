@@ -18,8 +18,6 @@
         selectedRenderSystem.render(value, selectedRenderSystem.currentCanvas, selectedRenderSystem.options, chosenSize)
     })
   }
-  
-  $: if (selectedRenderSystem.type == "text") console.log(selectedRenderSystem.render(value, selectedRenderSystem.options).split("\n").length)
 </script>
 
 <svelte:window bind:innerWidth={w}></svelte:window>

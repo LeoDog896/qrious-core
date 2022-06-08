@@ -1,4 +1,13 @@
 <script lang="ts">
+  import { renderCanvas } from "../../../src";
+  import { onMount } from "svelte";
+
+  let canvas: HTMLCanvasElement
+
+  onMount(() => {
+    renderCanvas("https://leodog896.github.io/scannable", canvas)
+  });
+
   const links = [
     { href: "/scannable/demo", name: "Demo" },
     { href: "https://github.com/LeoDog896/scannable", name: "GitHub" },
@@ -8,17 +17,23 @@
 
 <header class="
 text-center p-8 w-full h-screen text-white
-flex flex-col justify-center items-center
+flex flex-row justify-around items-center
 bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate"
 >
-  <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-4 drop-shadow-xl">Scannable</h1>
+  <div class="text-center">
+    <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-4 drop-shadow-xl">Scannable</h1>
 
-  <h2 class="text-3xl mb-4 drop-shadow-lg">Generate QR codes</h2>
+    <h2 class="text-3xl mb-4 drop-shadow-lg">Generate QR codes</h2>
 
-  <div class="flex flex-row">
-    {#each links as link}
-      <a href={link.href} class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">  {link.name}  </a>
-    {/each}
+    <div class="flex flex-row w-full justify-center">
+      {#each links as link}
+        <a href={link.href} class="drop-shadow-md px-4 py-1 text-xl underline mx-4 hover:gray-100">  {link.name}  </a>
+      {/each}
+    </div>
+  </div>
+
+  <div class="p-8 rounded-lg bg-white                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ">
+    <canvas bind:this={canvas} width=400 height=400></canvas>
   </div>
 </header>
 
