@@ -1,22 +1,8 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable max-params */
-
-// Bitwise notes:
-// f(x) = x ^ 1
-//  f(0) = 1
-//  f(1) = 0
-// f(x) = x >> 1
-//  aka f(x) = Math.floor(x / 2)
-// f(x) = x << 1
-//  aka f(x) = x * 2
-// f(x) = x & 1
-//  aka x === 1
-
 import * as Alignment from './constants/alignment';
 import * as ErrorCorrection from './constants/errorCorrection';
 import * as Galois from './constants/galois';
 import * as Version from './constants/version';
-import { WithRequired } from './utils';
+import type { WithRequired } from './utils';
 
 /* All Mask types with visible descriptions. */
 export enum MaskType {
@@ -49,25 +35,24 @@ export type UserFacingFrameOptions<T = FrameOptions> = Partial<T> & { readonly v
 export type RenderOptionsDefaults<T = FrameOptions> = Omit<T, 'value'> & { readonly value?: string };
 
 /**
- * A type of a {@link Uint8Array} that ensures that any value in it
- * is either 0 or 1
+ * A {@link Uint8Array} with only 0 or 1.
  */
 export type BinaryUint8Array = Uint8Array & { 
   [key: number]: 0 | 1
 };
 
 /**
- * Any type of a readonly {@link Uint8Array}
+ * Read-only like {@link Uint8Array}
  */
 type ReadOnlyUint8ArrayLike<T extends Uint8Array, N = number> = Omit<T, 'copyWithin' | 'fill' | 'reverse' | 'set' | 'sort'> & { readonly [key: number]: N };
 
 /**
- * A type of {@link BinaryUint8Array} that is read only.
+ * Read-only {@link BinaryUint8Array}.
  */
 export type ReadOnlyBinaryUint8Array = ReadOnlyUint8ArrayLike<BinaryUint8Array, 0 | 1>
 
 /**
- * A type of {@link Uint8Array} that is read only.
+ * Read-only {@link Uint8Array}.
  */
 export type ReadOnlyUint8Array = ReadOnlyUint8ArrayLike<Uint8Array, number>
 
@@ -76,13 +61,7 @@ export const defaultFrameOptions: RenderOptionsDefaults<FrameOptions> = Object.f
 });
 
 // *Badness* coefficients.
-const N1 = 3;
-
-const N2 = 3;
-
-const N3 = 40;
-
-const N4 = 10;
+const [N1, N2, N3, N4] = [3, 3, 40, 10];
 
 /**
  * Gets a mask bit at an index.
@@ -96,12 +75,7 @@ function getMaskBit(x: number, y: number): number {
     return getMaskBit(y, x);
   }
 
-  let bit = y;
-  bit += y * y;
-  bit >>= 1;
-  bit += x;
-
-  return bit;
+  return ((y + (y * y)) >> 1) + x;
 }
 
 /**
@@ -166,9 +140,9 @@ function setMaskIndex(i: number, width: number, mask: BinaryUint8Array) {
  * @param buffer - The buffer to read from
  */
 function syncMask(width: number, mask: BinaryUint8Array, buffer: ReadOnlyBinaryUint8Array) {
-  for (let z = 0; z < buffer.length; z++) {
-    if (buffer[z] & 1) {
-      setMaskIndex(z, width, mask);
+  for (let i = 0; i < buffer.length; i++) {
+    if (buffer[i] & 1) { // odd numbers that aren't 0
+      setMaskIndex(i, width, mask);
     }
   }
 }
@@ -186,20 +160,6 @@ function isMasked(x: number, y: number, mask: ReadOnlyBinaryUint8Array): number 
 
   return mask[bit] & 1;
 }
-
-/**
- * Check if the mask at the index position is masked (=== 1)
- * 
- * @param i - The index in the buffer
- * @param width - The QR code width
- * @param mask - The mask to check against
- * @returns If the mask at the index is masked (=== 1)
- */
-// function isMaskedIndex(i: number, width: number, mask: ReadOnlyBinaryUint8Array): number {
-//   const bit = getMaskBit(i % width, ~~(i / width));
-
-//   return mask[bit] & 1;
-// }
 
 /**
  * Generates all versions and block values.
@@ -530,14 +490,14 @@ function convertBitStream(version: number, value: string, ecc: Uint8Array, dataB
  @param width - The width of the QR code.
  @param oldCurrentMask - The mask array of the QR code.
  */
-function finish(level: number, chosenMask: MaskType | undefined, buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
+function finish(level: number, chosenMask: MaskType | null | undefined, buffer: BinaryUint8Array, width: number, oldCurrentMask: BinaryUint8Array): BinaryUint8Array {
   // Save pre-mask copy of frame.
   const tempBuffer = new Uint8Array(buffer) as BinaryUint8Array;
-  let i: number;
   let bit: MaskType = chosenMask ?? 0;
   let bestMaskBadness = 30000;
 
-  if (chosenMask === undefined) {
+  if (chosenMask === undefined || chosenMask === null || Number.isNaN(chosenMask)) {
+    let i = 0;
 
     /*
       * Using for instead of while since in original Arduino code if an early mask was "good enough" it wouldn't try for
@@ -581,7 +541,7 @@ function finish(level: number, chosenMask: MaskType | undefined, buffer: BinaryU
   bestMaskBadness = ErrorCorrection.FINAL_FORMAT[bit + (level - 1 << 3)];
 
   // Low byte.
-  for (i = 0; i < 8; i++, bestMaskBadness >>= 1) {
+  for (let i = 0; i < 8; i++, bestMaskBadness >>= 1) {
     if (bestMaskBadness & 1) {
       buffer[width - 1 - i + (width * 8)] = 1;
 
@@ -594,7 +554,7 @@ function finish(level: number, chosenMask: MaskType | undefined, buffer: BinaryU
   }
 
   // High byte.
-  for (i = 0; i < 7; i++, bestMaskBadness >>= 1) {
+  for (let i = 0; i < 7; i++, bestMaskBadness >>= 1) {
     if (bestMaskBadness & 1) {
       buffer[8 + (width * (width - 7 + i))] = 1;
 

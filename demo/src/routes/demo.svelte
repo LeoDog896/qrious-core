@@ -38,7 +38,7 @@
     name: "Unicode",
     render: (value, options) => renderTwoTone({
       value,
-      maskType: options.customMask.value ? options.mask.value : null
+      maskType: options.customMask.value ? options.mask.value : undefined
     }),
     lineSpacing: "1.1rem",
     tracking: "-0.05em",
@@ -53,7 +53,7 @@
       value, // NOTE: foreground = 0, background = 1
       foregroundChar: "0".repeat(thickness.value),
       backgroundChar: "1".repeat(thickness.value),
-      maskType: customMask.value ? mask.value : null
+      maskType: customMask.value ? mask.value : undefined
     }).split("\n")
       .map(it => "1".repeat(padding.value) + it + "1".repeat(padding.value)) // padding
       .map(it => (it + "\n").repeat(thickness.value).slice(0, -1)) // thickness

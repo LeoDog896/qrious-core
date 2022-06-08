@@ -1,6 +1,31 @@
-import { UserFacingFrameOptions, generateFrame } from '../Frame';
-import { defaultImageLikeRenderOptions, ImageLikeRenderOptions } from './options/image';
-import { getModuleSize } from '../utils';
+import { UserFacingFrameOptions, generateFrame, FrameOptions, RenderOptionsDefaults, defaultFrameOptions } from '../Frame';
+
+export interface ImageLikeRenderOptions extends FrameOptions {
+  readonly backgroundColor: string;
+  readonly backgroundAlpha: number;
+  readonly foregroundColor: string;
+  readonly foregroundAlpha: number;
+  readonly width: number;
+  readonly height: number;
+  readonly x: number;
+  readonly y: number;
+  readonly moduleSizeWidth: number;
+  readonly moduleSizeHeight: number;
+}
+
+export const defaultImageLikeRenderOptions: RenderOptionsDefaults<ImageLikeRenderOptions> = Object.freeze({
+  backgroundColor: 'white',
+  backgroundAlpha: 1,
+  foregroundColor: 'black',
+  foregroundAlpha: 1,
+  width: 100,
+  height: 100,
+  x: 0,
+  y: 0,
+  moduleSizeWidth: 0,
+  moduleSizeHeight: 0,
+  ...defaultFrameOptions
+});
 
 /**
  * Renders a QR code onto a canvas context
@@ -28,8 +53,8 @@ export const renderContext = (
   
   const frame = generateFrame(processedOptions);
   
-  const rawModuleSizeWidth = getModuleSize(frame.width, processedOptions.width);
-  const rawModuleSizeHeight = getModuleSize(frame.width, processedOptions.height);
+  const rawModuleSizeWidth = processedOptions.width / frame.width;
+  const rawModuleSizeHeight = processedOptions.height / frame.width;
 
   const moduleSizeWidth = Math.round(rawModuleSizeWidth);
   const moduleSizeHeight = Math.round(rawModuleSizeHeight);

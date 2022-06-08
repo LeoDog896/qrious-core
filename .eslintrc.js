@@ -34,20 +34,12 @@ module.exports = {
     "no-var": "error",
     "prefer-const": "error",
     "no-use-before-define": "error",
-    "no-bitwise": "off",
-    "no-empty-function": "off",
-    "no-invalid-this": "off",
-    "no-unused-vars": [
-      "warn",
-      {
-        "args": "none"
-      }
-    ],
-    "functional/functional-parameters": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "functional/functional-parameters": "warn",
     "@typescript-eslint/prefer-readonly": "error",
     "@typescript-eslint/prefer-nullish-coalescing": "error",
     "@typescript-eslint/prefer-optional-chain": "error",
     "@typescript-eslint/prefer-for-of": "error",
-    "perf-standard/check-function-inline": "warn"
+    "perf-standard/check-function-inline": "warn",
   }
 }

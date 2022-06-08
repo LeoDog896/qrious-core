@@ -2,7 +2,6 @@
 
 export type Level = 'L' | 'M' | 'Q' | 'H'
 
-
 /**
  * The error correction blocks.
  *
@@ -66,12 +65,10 @@ export const FINAL_FORMAT: readonly number[] = Object.freeze([
   0x1689, 0x13be, 0x1ce7, 0x19d0, 0x0762, 0x0255, 0x0d0c, 0x083b
 ]);
 
-
 /**
  * A map of human-readable ECC levels.
  */
 export const LEVELS: Readonly<{
-  // eslint-disable-next-line no-unused-vars
   readonly [K in Level]: number;
 }> = Object.freeze({
   L: 1,
@@ -79,4 +76,3 @@ export const LEVELS: Readonly<{
   Q: 3,
   H: 4
 });
-
