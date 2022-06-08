@@ -56,8 +56,11 @@ export const renderContext = (
   const rawModuleSizeWidth = processedOptions.width / frame.width;
   const rawModuleSizeHeight = processedOptions.height / frame.width;
 
-  const moduleSizeWidth = Math.round(rawModuleSizeWidth);
-  const moduleSizeHeight = Math.round(rawModuleSizeHeight);
+  const offsetX = (rawModuleSizeWidth % 1) * frame.width / 2;
+  const offsetY = (rawModuleSizeHeight % 1) * frame.width / 2;
+
+  const moduleSizeWidth = Math.floor(rawModuleSizeWidth);
+  const moduleSizeHeight = Math.floor(rawModuleSizeHeight);
 
   for (let i = 0; i < frame.width; i++) {
     for (let j = 0; j < frame.width; j++) {
@@ -66,8 +69,8 @@ export const renderContext = (
         context.globalAlpha = processedOptions.foregroundAlpha;
 
         context.fillRect(
-          (moduleSizeWidth * i) + processedOptions.x,
-          (moduleSizeHeight * j) + processedOptions.y,
+          offsetX + (moduleSizeWidth * i) + processedOptions.x,
+          offsetY + (moduleSizeHeight * j) + processedOptions.y,
           moduleSizeWidth, moduleSizeHeight
         );
       } else {
@@ -75,8 +78,8 @@ export const renderContext = (
         context.globalAlpha = processedOptions.backgroundAlpha;
 
         context.fillRect(
-          (moduleSizeWidth * i) + processedOptions.x,
-          (moduleSizeHeight * j) + processedOptions.y,
+          offsetX + (moduleSizeWidth * i) + processedOptions.x,
+          offsetY + (moduleSizeHeight * j) + processedOptions.y,
           moduleSizeWidth, moduleSizeHeight
         );
       }

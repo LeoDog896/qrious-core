@@ -1,6 +1,6 @@
 # Contributing
 
-If you have any questions about [Scannable](https://github.com/LeoDog896/scannable) please feel free to
+If you have any questions about [scannable](https://github.com/LeoDog896/scannable) please feel free to
 [raise an issue](https://github.com/LeoDog896/scannable/issues/new).
 
 Please [search existing issues](https://github.com/LeoDog896/scannable/issues) for the same feature and/or issue before

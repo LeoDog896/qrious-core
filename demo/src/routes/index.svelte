@@ -16,12 +16,12 @@
 </script>
 
 <header class="
-text-center p-8 w-full h-screen text-white
-flex flex-row justify-around items-center
+text-center p-8 w-full min-h-screen h-max text-white
+flex flex-col lg:flex-row justify-around items-center
 bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate"
 >
   <div class="text-center">
-    <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-4 drop-shadow-xl">Scannable</h1>
+    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 drop-shadow-xl">Scannable</h1>
 
     <h2 class="text-3xl mb-4 drop-shadow-lg">Generate QR codes</h2>
 
@@ -32,7 +32,7 @@ bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate"
     </div>
   </div>
 
-  <div class="p-8 rounded-lg bg-white                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ">
+  <div class="lg:mt-0 mt-20 p-8 rounded-lg bg-white                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ">
     <canvas bind:this={canvas} width=400 height=400></canvas>
   </div>
 </header>
