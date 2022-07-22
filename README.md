@@ -14,26 +14,32 @@ Demo: https://leodog896.github.io/scannable.
 TIP: If you want to try out the methods, open inspect element.
 
 ## Install
-```bash
-npm i scannable
+`npm i scannable`
+
+## Deno
+```ts
+import { ... } from "https://esm.sh/scannable"; // all functions are exposed!
 ```
 
 ## QR Generation
 
 ```ts
-import { renderText, renderTwoTone, renderCanvas } from 'scannable';
+import { renderText, renderTwoTone, renderCanvas, renderSVG } from 'scannable';
 
 // Render it to a canvas
 renderCanvas("https://yahoo.net", coolCanvas)
 
 // Outputs a qr code with ASCII text
-renderText('https://example.com');
+const text = renderText('https://example.com');
 
 // You can also specify options
-renderText({ value: "https://google.com", foregroundChar: "%" })
+const customText = renderText({ value: "https://google.com", foregroundChar: "%" })
 
 // You can even use unicode characters to squish text.
-renderTwoTone('https://leodog896.github.io/scannable')
+const unicodeText = renderTwoTone('https://leodog896.github.io/scannable')
+
+// Or make an SVG!
+const svgHTML = renderSVG("https://netflix.com")
 ```
 
 ## Development

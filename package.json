@@ -67,20 +67,20 @@
     "@size-limit/preset-small-lib": "^7.0.8",
     "@size-limit/webpack": "^7.0.8",
     "@size-limit/webpack-why": "^7.0.8",
-    "@types/jest": "^28.1.1",
+    "@types/jest": "^28.1.6",
     "@types/split": "^1.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.16.0",
-    "@typescript-eslint/parser": "^5.16.0",
-    "eslint": "^8.12.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "eslint": "^8.20.0",
     "eslint-config-notninja": "^0.4.0",
     "eslint-plugin-functional": "^4.2.0",
     "eslint-plugin-perf-standard": "^1.0.3",
     "eslint-plugin-tsdoc": "^0.2.14",
     "husky": "^8.0.1",
-    "jest": "^28.1.1",
+    "jest": "^28.1.3",
     "size-limit": "^7.0.8",
     "split": "^1.0.1",
-    "ts-jest": "^28.0.4",
-    "typescript": "^4.6.2"
+    "ts-jest": "^28.0.7",
+    "typescript": "^4.7.4"
   }
 }

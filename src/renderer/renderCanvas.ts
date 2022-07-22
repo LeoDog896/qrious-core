@@ -42,8 +42,8 @@ export const renderContext = (
 
   const processedOptions: ImageLikeRenderOptions = { 
     ...defaultImageLikeRenderOptions,
-    width: width ?? (context.canvas.clientWidth - ((jsonOptions.x ?? 0) * 2)),
-    height: height ?? (context.canvas.clientHeight - ((jsonOptions.y ?? 0) * 2)),
+    width: width ?? (context.canvas.width - ((jsonOptions.x ?? 0) * 2)),
+    height: height ?? (context.canvas.height - ((jsonOptions.y ?? 0) * 2)),
     ...jsonOptions,
   };
   

@@ -6,6 +6,8 @@
     { href: "https://github.com/LeoDog896/scannable", name: "GitHub" },
     { href: "https://npmjs.com/package/scannable", name: "NPM" }
   ]
+
+  let svgContent = "https://leodog896.github.io/scannable"
 </script>
 
 <header class="
@@ -26,7 +28,8 @@ bg-gradient-to-r from-sky-500 via-blue-500 to-cyan-500 background-animate"
   </div>
 
   <div class="lg:mt-0 mt-20 p-8 rounded-lg bg-white                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ">
-    {@html renderSVG({ value: "https://leodog896.github.io/scannable", width: 400, height: 400 })}
+    {@html renderSVG({ value: svgContent, width: 400, height: 400 })}
+    <input class="text-black border-b mt-5 border-black" placeholder="Enter URL" bind:value={svgContent}>
   </div>
 </header>
 
