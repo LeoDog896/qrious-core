@@ -1,6 +1,7 @@
 {
   "name": "scannable",
   "version": "0.7.0",
+  "sideEffects": false,
   "description": "Create QR codes with ease.",
   "homepage": "https://leodog896.github.io/scannable",
   "repository": "https://github.com/LeoDog896/scannable",
