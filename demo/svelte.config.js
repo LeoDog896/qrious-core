@@ -15,9 +15,6 @@ const config = {
     paths: {
       base: "/scannable"
     },
-    prerender: {
-      default: true
-    },
 		adapter: adapter()
 	}
 };
